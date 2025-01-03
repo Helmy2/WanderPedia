@@ -60,8 +60,6 @@ dependencies {
     //Dagger-Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
-    testImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.core.testing)
     ksp(libs.hilt.compiler)
 
     // Navigation
@@ -70,8 +68,6 @@ dependencies {
     // lifecycle
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
-
-
 
     // Padding
     implementation(libs.padding)
@@ -118,11 +114,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     testImplementation(libs.junit)
-    testImplementation(libs.androidx.core.testing)
-    testImplementation(libs.androidx.runner)
-    testImplementation(libs.androidx.rules)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.jetbrains.kotlin.test)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)

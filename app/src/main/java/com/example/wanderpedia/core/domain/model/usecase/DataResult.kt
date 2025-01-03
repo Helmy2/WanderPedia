@@ -4,8 +4,8 @@ sealed class DataResult<out D> {
     data class Success<out D>(val data: D) : DataResult<D>()
     data class Error(val error: Throwable) : DataResult<Nothing>()
 
-    fun isSuccessful() = this is Success
-    fun hasFailed() = this is Error
+    fun isSuccess() = this is Success
+    fun isFailed() = this is Error
 
     override fun toString(): String {
         return when (this) {
@@ -14,12 +14,8 @@ sealed class DataResult<out D> {
         }
     }
 
-    fun getOrNull(): D? = when (this) {
-        is Success -> data
-        is Error -> null
-    }
-
-    fun exceptionOrNull(): Throwable? = when (this) {
+    val exception: Throwable?
+        get() = when (this) {
         is Success -> null
         is Error -> error
     }
@@ -29,6 +25,7 @@ inline fun <T, R> T.safeDataResult(block: T.() -> R): DataResult<R> {
     return try {
         DataResult.Success(block())
     } catch (e: Throwable) {
+        e.printStackTrace()
         DataResult.Error(e)
     }
 }
