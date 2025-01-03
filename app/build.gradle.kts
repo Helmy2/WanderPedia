@@ -56,6 +56,8 @@ dependencies {
 
     // Material
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
+
 
     //Dagger-Hilt
     implementation(libs.hilt.android)

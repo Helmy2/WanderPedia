@@ -15,6 +15,6 @@ abstract class ServiceModule {
     @Binds
     @Singleton
     abstract fun bindAccountService(
-        accountServiceImpl: AccountServiceImpl
+        accountServiceImpl: AccountServiceImpl,
     ): AccountService
 }

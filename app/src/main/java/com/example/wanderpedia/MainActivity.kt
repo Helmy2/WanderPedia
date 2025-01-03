@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.wanderpedia.core.ui.theme.WanderPediaTheme
 import com.example.wanderpedia.navigation.AppNavHost
-import com.example.wanderpedia.ui.theme.WanderPediaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

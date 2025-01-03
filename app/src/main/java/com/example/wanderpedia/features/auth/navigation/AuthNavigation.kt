@@ -1,10 +1,13 @@
 package com.example.wanderpedia.features.auth.navigation
 
 import androidx.compose.runtime.Immutable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.wanderpedia.features.auth.ui.signin.SignInScreen
+import com.example.wanderpedia.features.auth.ui.signin.SignInViewModel
 import com.example.wanderpedia.navigation.AppDestinations
 import kotlinx.serialization.Serializable
 
@@ -25,9 +28,7 @@ fun NavGraphBuilder.authNavigation(
             onNavigateBack = {
                 navController.popBackStack()
             },
-            onComplete = {
-                onCompleteAuth()
-            }
+            onComplete = onCompleteAuth
         )
 
         signUpRute(
@@ -67,7 +68,15 @@ fun NavGraphBuilder.signInRute(
     onComplete: () -> Unit
 ) {
     composable<AuthDestinations.SignIn> {
+        val viewModel = hiltViewModel<SignInViewModel>()
 
+        SignInScreen(
+            viewModel = viewModel,
+            onNavigateToSignUp = onNavigateToSignUp,
+            onNavigateToRestPassword = onNavigateToRestPassword,
+            onNavigateBack = onNavigateBack,
+            onComplete = onComplete
+        )
     }
 }
 

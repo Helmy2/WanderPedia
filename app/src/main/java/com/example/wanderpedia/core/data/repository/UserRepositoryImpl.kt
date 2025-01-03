@@ -2,66 +2,69 @@ package com.example.wanderpedia.core.data.repository
 
 import com.example.wanderpedia.core.data.error.AuthException.UserNotFoundException
 import com.example.wanderpedia.core.data.source.remote.AccountService
+import com.example.wanderpedia.core.di.IoDispatcher
+import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.User
-import com.example.wanderpedia.core.domain.model.usecase.DataResult
-import com.example.wanderpedia.core.domain.model.usecase.safeDataResult
+import com.example.wanderpedia.core.domain.model.safeResource
 import com.example.wanderpedia.core.domain.repository.UserRepository
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : UserRepository {
-    override val currentUser: Flow<DataResult<User>>
+    override val currentUser: Flow<Resource<User>>
         get() = accountService.currentUser.map { user ->
             user?.let {
-                DataResult.Success(user)
-            } ?: DataResult.Error(UserNotFoundException())
-        }
+                Resource.Success(user)
+            } ?: Resource.Error(UserNotFoundException())
+        }.flowOn(ioDispatcher)
 
 
     override suspend fun createAnonymousAccount(
-    ) = safeDataResult {
+    ) = safeResource {
         accountService.createAnonymousAccount()
     }
 
     override suspend fun updateDisplayName(
         newDisplayName: String
-    ) = safeDataResult {
+    ) = safeResource {
         accountService.updateDisplayName(newDisplayName)
     }
 
 
-    override suspend fun linkAccountWithGoogle(
-        idToken: String
-    ) = safeDataResult {
-        accountService.linkAccountWithGoogle(idToken)
+    override suspend fun linkAccountWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential) =
+        safeResource {
+            accountService.linkAccountWithGoogle(googleIdTokenCredential.idToken)
     }
 
     override suspend fun linkAccountWithEmail(
         email: String, password: String
-    ) = safeDataResult {
+    ) = safeResource {
         accountService.linkAccountWithEmail(email, password)
     }
 
-    override suspend fun signInWithGoogle(
-        idToken: String
-    ) = safeDataResult {
-        accountService.signInWithGoogle(idToken)
+    override suspend fun signInWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential) =
+        safeResource {
+            accountService.signInWithGoogle(googleIdTokenCredential.idToken)
     }
 
     override suspend fun signInWithEmail(
         email: String, password: String
-    ) = safeDataResult {
+    ) = safeResource {
         accountService.signInWithEmail(email, password)
     }
 
-    override suspend fun signOut() = safeDataResult {
+    override suspend fun signOut() = safeResource {
         accountService.signOut()
     }
 
-    override suspend fun deleteAccount() = safeDataResult {
+    override suspend fun deleteAccount() = safeResource {
         accountService.deleteAccount()
     }
 }

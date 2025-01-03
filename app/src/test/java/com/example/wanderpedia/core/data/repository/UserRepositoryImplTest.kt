@@ -2,15 +2,18 @@ package com.example.wanderpedia.core.data.repository
 
 import com.example.wanderpedia.core.data.error.AuthException.UserNotFoundException
 import com.example.wanderpedia.core.data.source.remote.AccountService
+import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.User
-import com.example.wanderpedia.core.domain.model.usecase.DataResult
 import com.example.wanderpedia.core.domain.repository.UserRepository
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -22,10 +25,12 @@ class UserRepositoryImplTest {
 
     private lateinit var userRepository: UserRepository
 
+    private val dispatcher = Dispatchers.Unconfined
+
     @Before
     fun setUp() {
         accountService = mock()
-        userRepository = UserRepositoryImpl(accountService)
+        userRepository = UserRepositoryImpl(accountService, dispatcher)
     }
 
     @Test
@@ -35,7 +40,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.currentUser.first()
 
-        assertIs<DataResult.Success<User>>(result)
+        assertIs<Resource.Success<User>>(result)
         assertEquals(user, result.data)
     }
 
@@ -45,7 +50,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.currentUser.first()
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertTrue(result.exception is UserNotFoundException)
     }
 
@@ -56,7 +61,7 @@ class UserRepositoryImplTest {
 
             val result = userRepository.createAnonymousAccount()
 
-            assertIs<DataResult.Success<Unit>>(result)
+            assertIs<Resource.Success<Unit>>(result)
         }
 
     @Test
@@ -67,7 +72,7 @@ class UserRepositoryImplTest {
 
             val result = userRepository.createAnonymousAccount()
 
-            assertIs<DataResult.Error>(result)
+            assertIs<Resource.Error>(result)
             assertEquals(exception, result.exception)
         }
 
@@ -78,7 +83,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.updateDisplayName(newDisplayName)
 
-        assertIs<DataResult.Success<Unit>>(result)
+        assertIs<Resource.Success<Unit>>(result)
     }
 
     @Test
@@ -89,30 +94,38 @@ class UserRepositoryImplTest {
 
         val result = userRepository.updateDisplayName(newDisplayName)
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 
     @Test
     fun `linkAccountWithGoogle should return DataResult_Success when linking is successful`() =
         runTest {
-            val idToken = "testIdToken"
-            whenever(accountService.linkAccountWithGoogle(idToken)).thenReturn(Unit)
+            val googleIdTokenCredential = mock<GoogleIdTokenCredential> {
+                on { idToken } doReturn "testIdToken"
+            }
+            whenever(accountService.linkAccountWithGoogle(googleIdTokenCredential.idToken)).thenReturn(
+                Unit
+            )
 
-            val result = userRepository.linkAccountWithGoogle(idToken)
+            val result = userRepository.linkAccountWithGoogle(googleIdTokenCredential)
 
-            assertIs<DataResult.Success<Unit>>(result)
+            assertIs<Resource.Success<Unit>>(result)
         }
 
     @Test
     fun `linkAccountWithGoogle should return DataResult_Error when linking fails`() = runTest {
-        val idToken = "testIdToken"
+        val googleIdTokenCredential = mock<GoogleIdTokenCredential> {
+            on { idToken } doReturn "testIdToken"
+        }
         val exception = RuntimeException("Linking failed")
-        whenever(accountService.linkAccountWithGoogle(idToken)).thenThrow(exception)
+        whenever(accountService.linkAccountWithGoogle(googleIdTokenCredential.idToken)).thenThrow(
+            exception
+        )
 
-        val result = userRepository.linkAccountWithGoogle(idToken)
+        val result = userRepository.linkAccountWithGoogle(googleIdTokenCredential)
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 
@@ -125,7 +138,7 @@ class UserRepositoryImplTest {
 
             val result = userRepository.linkAccountWithEmail(email, password)
 
-            assertIs<DataResult.Success<Unit>>(result)
+            assertIs<Resource.Success<Unit>>(result)
         }
 
     @Test
@@ -137,29 +150,35 @@ class UserRepositoryImplTest {
 
         val result = userRepository.linkAccountWithEmail(email, password)
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 
     @Test
     fun `signInWithGoogle should return DataResult_Success when sign-in is successful`() = runTest {
-        val idToken = "testIdToken"
-        whenever(accountService.signInWithGoogle(idToken)).thenReturn(Unit)
+        val googleIdTokenCredential = mock<GoogleIdTokenCredential> {
+            on { idToken } doReturn "testIdToken"
+        }
+        whenever(accountService.signInWithGoogle(googleIdTokenCredential.idToken)).thenReturn(Unit)
 
-        val result = userRepository.signInWithGoogle(idToken)
+        val result = userRepository.signInWithGoogle(googleIdTokenCredential)
 
-        assertIs<DataResult.Success<Unit>>(result)
+        assertIs<Resource.Success<Unit>>(result)
     }
 
     @Test
     fun `signInWithGoogle should return DataResult_Error when sign-in fails`() = runTest {
-        val idToken = "testIdToken"
+        val googleIdTokenCredential = mock<GoogleIdTokenCredential> {
+            on { idToken } doReturn "testIdToken"
+        }
         val exception = RuntimeException("Sign-in failed")
-        whenever(accountService.signInWithGoogle(idToken)).thenThrow(exception)
+        whenever(accountService.signInWithGoogle(googleIdTokenCredential.idToken)).thenThrow(
+            exception
+        )
 
-        val result = userRepository.signInWithGoogle(idToken)
+        val result = userRepository.signInWithGoogle(googleIdTokenCredential)
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 
@@ -171,7 +190,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signInWithEmail(email, password)
 
-        assertIs<DataResult.Success<Unit>>(result)
+        assertIs<Resource.Success<Unit>>(result)
     }
 
     @Test
@@ -183,7 +202,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signInWithEmail(email, password)
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 
@@ -193,7 +212,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signOut()
 
-        assertIs<DataResult.Success<Unit>>(result)
+        assertIs<Resource.Success<Unit>>(result)
     }
 
     @Test
@@ -203,7 +222,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signOut()
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 
@@ -213,7 +232,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.deleteAccount()
 
-        assertIs<DataResult.Success<Unit>>(result)
+        assertIs<Resource.Success<Unit>>(result)
     }
 
     @Test
@@ -223,7 +242,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.deleteAccount()
 
-        assertIs<DataResult.Error>(result)
+        assertIs<Resource.Error>(result)
         assertEquals(exception, result.exception)
     }
 }
