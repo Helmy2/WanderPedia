@@ -1,4 +1,4 @@
-package com.example.wanderpedia.features.auth.ui.signup
+package com.example.wanderpedia.features.auth.ui.resetpassword
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -10,37 +10,35 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wanderpedia.core.ui.component.DefaultSnackbarHost
 import kotlinx.coroutines.launch
 
+
 @Composable
-fun SignUpScreen(
-    viewModel: SignUpViewModel = hiltViewModel(),
+fun RestPasswordScreen(
+    viewModel: RestPasswordViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    onComplete: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                SignUpEffect.NavigateBack -> onNavigateBack()
-                SignUpEffect.SuccessToSignUp -> onComplete()
-                is SignUpEffect.ShowErrorToast -> {
+                RestPasswordEffect.NavigateBack -> onNavigateBack()
+                is RestPasswordEffect.ShowErrorToast -> {
                     scope.launch {
-                        snackbarHostState.currentSnackbarData?.dismiss()
                         snackbarHostState.showSnackbar(
                             message = it.message,
                             duration = SnackbarDuration.Short
                         )
                     }
                 }
+
+                RestPasswordEffect.SuccessToRestPassword -> onNavigateBack()
             }
         }
     }
@@ -48,26 +46,22 @@ fun SignUpScreen(
     Scaffold(
         snackbarHost = {
             DefaultSnackbarHost(snackbarHostState)
-        }
+        },
     ) { padding ->
-        SignUpContent(
+        RestPasswordContent(
             email = state.email,
-            password = state.password,
-            loading = state.loading,
-            showDialog = state.showDialog,
-            isPasswordVisible = state.isPasswordVisible,
-            isValuedPassword = state.passwordSupportingText.isEmpty(),
-            isValuedEmail = state.emailSupportingText.isEmpty(),
-            passwordSupportingText = state.passwordSupportingText,
-            emailSupportingText = state.emailSupportingText,
+            showDislodge = state.showDislodge,
             modifier = Modifier.padding(padding),
-            onDismissDialog = { viewModel.updateDialogValue(false) },
-            onBackClick = onNavigateBack,
+            loading = state.loading,
+            onNavigateBack = onNavigateBack,
             onEmailChange = viewModel::updateEmail,
-            onPasswordChange = viewModel::updatePassword,
-            onPasswordHiddenClick = viewModel::updatePasswordVisibility,
-            onSignWithEmailInClick = viewModel::signUpWithEmail,
-            onSignWithGoogle = { viewModel.signUpWithGoogle(context) }
+            resetPasswordClick = viewModel::resetPassword,
+            isEmailValid = state.isEmailValid,
+            onComplete = { viewModel.updateDialog(false) },
+            onDismissRequest = { viewModel.updateDialog(false) },
         )
     }
 }
+
+
+

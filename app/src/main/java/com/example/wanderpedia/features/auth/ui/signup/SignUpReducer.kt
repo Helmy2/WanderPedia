@@ -20,7 +20,7 @@ data class SignUpState(
 ) : ViewState
 
 sealed class SignUpEvent : ViewEvent {
-    data class UpdateShowSuccessDialog(val showDialog: Boolean) : SignUpEvent()
+    data class UpdateShowDialog(val showDialog: Boolean) : SignUpEvent()
     data class UpdateLoading(val loading: Boolean) : SignUpEvent()
     data class UpdateEmail(val email: String) : SignUpEvent()
     data class UpdatePassword(val password: String) : SignUpEvent()
@@ -41,7 +41,7 @@ class SignUpReducer : Reducer<SignUpState, SignUpEvent, SignUpEffect> {
         event: SignUpEvent
     ): Pair<SignUpState, SignUpEffect?> {
         return when (event) {
-            is SignUpEvent.UpdateShowSuccessDialog -> previousState.copy(showDialog = event.showDialog) to null
+            is SignUpEvent.UpdateShowDialog -> previousState.copy(showDialog = event.showDialog) to null
             is SignUpEvent.UpdateEmail -> previousState.copy(email = event.email) to null
             is SignUpEvent.UpdateLoading -> previousState.copy(loading = event.loading) to null
             is SignUpEvent.UpdatePassword -> previousState.copy(password = event.password) to null
@@ -62,11 +62,10 @@ class SignUpReducer : Reducer<SignUpState, SignUpEvent, SignUpEffect> {
                 val effect = when (event.resource) {
                     is Resource.Success -> {
                         previousState.copy(showDialog = true)
-                        null
+                        SignUpEffect.SuccessToSignUp
                     }
 
                     is Resource.Error -> SignUpEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())
-                    Resource.Loading -> null
                 }
                 return previousState to effect
             }
@@ -75,11 +74,10 @@ class SignUpReducer : Reducer<SignUpState, SignUpEvent, SignUpEffect> {
                 val effect = when (event.resource) {
                     is Resource.Success -> {
                         previousState.copy(showDialog = true)
-                        null
+                        SignUpEffect.SuccessToSignUp
                     }
 
                     is Resource.Error -> SignUpEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())
-                    Resource.Loading -> null
                 }
                 return previousState to effect
             }

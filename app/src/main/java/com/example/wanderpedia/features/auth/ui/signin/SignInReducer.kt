@@ -12,7 +12,9 @@ data class SignInState(
     val password: String = "",
     val loading: Boolean = false,
     val isPasswordHidden: Boolean = false,
-) : ViewState
+) : ViewState {
+    val isValuedSignInWithEmail: Boolean = email.isNotBlank() && password.isNotBlank()
+}
 
 sealed class SignInEvent : ViewEvent {
     data class UpdateLoading(val loading: Boolean) : SignInEvent()
@@ -45,7 +47,6 @@ class SignInReducer : Reducer<SignInState, SignInEvent, SignInEffect> {
                 val effect = when (event.resource) {
                     is Resource.Success -> SignInEffect.SuccessSignIn
                     is Resource.Error -> SignInEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())
-                    Resource.Loading -> null
                 }
                 previousState to effect
             }
@@ -54,7 +55,6 @@ class SignInReducer : Reducer<SignInState, SignInEvent, SignInEffect> {
                 val effect = when (event.resource) {
                     is Resource.Success -> SignInEffect.SuccessSignIn
                     is Resource.Error -> SignInEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())
-                    Resource.Loading -> null
                 }
                 previousState to effect
             }

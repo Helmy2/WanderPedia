@@ -1,15 +1,13 @@
 package com.example.wanderpedia.features.auth.ui.navigation
 
 import androidx.compose.runtime.Immutable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.wanderpedia.features.auth.ui.resetpassword.RestPasswordScreen
 import com.example.wanderpedia.features.auth.ui.signin.SignInScreen
-import com.example.wanderpedia.features.auth.ui.signin.SignInViewModel
 import com.example.wanderpedia.features.auth.ui.signup.SignUpScreen
-import com.example.wanderpedia.features.auth.ui.signup.SignUpViewModel
 import com.example.wanderpedia.navigation.AppDestinations
 import kotlinx.serialization.Serializable
 
@@ -38,7 +36,7 @@ fun NavGraphBuilder.authNavigation(
                 navController.popBackStack()
             },
             onComplete = {
-                onCompleteAuth()
+                navController.popBackStack()
             }
         )
 
@@ -70,10 +68,7 @@ fun NavGraphBuilder.signInRute(
     onComplete: () -> Unit
 ) {
     composable<AuthDestinations.SignIn> {
-        val viewModel = hiltViewModel<SignInViewModel>()
-
         SignInScreen(
-            viewModel = viewModel,
             onNavigateToSignUp = onNavigateToSignUp,
             onNavigateToRestPassword = onNavigateToRestPassword,
             onNavigateBack = onNavigateBack,
@@ -87,9 +82,7 @@ fun NavGraphBuilder.signUpRute(
     onComplete: () -> Unit
 ) {
     composable<AuthDestinations.SignUp> {
-        val viewModel = hiltViewModel<SignUpViewModel>()
         SignUpScreen(
-            viewModel = viewModel,
             onNavigateBack = onNavigateBack,
             onComplete = onComplete
         )
@@ -100,7 +93,9 @@ fun NavGraphBuilder.restPasswordRute(
     onNavigateBack: () -> Unit,
 ) {
     composable<AuthDestinations.RestPassword> {
-
+        RestPasswordScreen(
+            onNavigateBack = onNavigateBack,
+        )
     }
 }
 

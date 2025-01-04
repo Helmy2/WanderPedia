@@ -60,6 +60,10 @@ class UserRepositoryImpl @Inject constructor(
         accountService.signInWithEmail(email, password)
     }
 
+    override suspend fun resetPassword(email: String) = safeResource {
+        accountService.resetPassword(email)
+    }
+
     override suspend fun signOut() = safeResource {
         accountService.signOut()
     }

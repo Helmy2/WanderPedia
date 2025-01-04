@@ -27,7 +27,7 @@ class SignUpViewModel @Inject constructor(
 ) {
 
     fun updateDialogValue(show: Boolean) {
-        sendEvent(SignUpEvent.UpdateShowSuccessDialog(show))
+        sendEvent(SignUpEvent.UpdateShowDialog(show))
     }
 
 
@@ -68,7 +68,6 @@ class SignUpViewModel @Inject constructor(
             val result = when (credential) {
                 is Resource.Error -> Resource.Error(credential.error)
                 is Resource.Success -> linkAccountWithGoogleUseCase(credential.data)
-                Resource.Loading -> Resource.Loading
             }
             sendEventForEffect(SignUpEvent.SignInWithGoogle(result))
 

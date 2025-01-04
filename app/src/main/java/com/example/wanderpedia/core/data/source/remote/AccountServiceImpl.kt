@@ -84,6 +84,11 @@ class AccountServiceImpl @Inject constructor(
         getCurrentUser().delete().await()
     }
 
+    override suspend fun resetPassword(email: String) {
+        firebaseAuth.sendPasswordResetEmail(email).await()
+    }
+
+
     private fun getCurrentUser(): FirebaseUser {
         return firebaseAuth.currentUser ?: throw UserNotFoundException()
     }

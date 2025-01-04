@@ -97,7 +97,8 @@ fun SignUpContent(
                 email = email,
                 onValueChange = onEmailChange,
                 isValuedEmail = isValuedEmail,
-                supportingText = { Text(text = emailSupportingText) }
+                supportingText = { Text(text = emailSupportingText) },
+                modifier = Modifier.fillMaxWidth(),
             )
             PasswordField(
                 password = password,
@@ -105,7 +106,8 @@ fun SignUpContent(
                 isHidden = !isPasswordVisible,
                 onIsHiddenChange = onPasswordHiddenClick,
                 isValuedPassword = isValuedPassword,
-                supportingText = { Text(text = passwordSupportingText) }
+                supportingText = { Text(text = passwordSupportingText) },
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(16.dp))
             SignButtonField(
@@ -113,7 +115,6 @@ fun SignUpContent(
                 onSignWithEmailInClick = onSignWithEmailInClick,
                 onSignWithGoogle = onSignWithGoogle
             )
-
             SignInField(onClick = onBackClick)
         }
     }

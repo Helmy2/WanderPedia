@@ -2,7 +2,6 @@ package com.example.wanderpedia.features.auth.ui.signin
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,13 +10,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.wanderpedia.core.ui.component.DefaultSnackbarHost
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun SignInScreen(
-    viewModel: SignInViewModel,
+    viewModel: SignInViewModel = hiltViewModel(),
     onNavigateToSignUp: () -> Unit,
     onNavigateToRestPassword: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -56,7 +57,7 @@ fun SignInScreen(
 
     Scaffold(
         snackbarHost = {
-            SnackbarHost(snackbarHostState)
+            DefaultSnackbarHost(snackbarHostState)
         }
     ) { padding ->
         SignInContent(
@@ -64,6 +65,7 @@ fun SignInScreen(
             password = state.password,
             loading = state.loading,
             isPasswordHidden = state.isPasswordHidden,
+            isValuedSignInWithEmail = state.isValuedSignInWithEmail,
             onEmailChange = { viewModel.sendEvent(SignInEvent.UpdateEmail(it)) },
             onPasswordChange = { viewModel.sendEvent(SignInEvent.UpdatePassword(it)) },
             onPasswordHiddenClick = { viewModel.sendEvent(SignInEvent.UpdatePasswordAdvisably(it)) },

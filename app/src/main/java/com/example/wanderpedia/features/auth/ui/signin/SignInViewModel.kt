@@ -34,7 +34,6 @@ class SignInViewModel
             val result = when (credential) {
                 is Resource.Error -> Resource.Error(credential.error)
                 is Resource.Success -> signInWithGoogleUseCase(credential.data)
-                Resource.Loading -> Resource.Loading
             }
             sendEventForEffect(SignInEvent.SignInWithGoogle(result))
 

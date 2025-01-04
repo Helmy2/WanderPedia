@@ -13,6 +13,7 @@ interface UserRepository {
     suspend fun linkAccountWithEmail(email: String, password: String): Resource<Unit>
     suspend fun signInWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential): Resource<Unit>
     suspend fun signInWithEmail(email: String, password: String): Resource<Unit>
+    suspend fun resetPassword(email: String): Resource<Unit>
     suspend fun signOut(): Resource<Unit>
     suspend fun deleteAccount(): Resource<Unit>
 }

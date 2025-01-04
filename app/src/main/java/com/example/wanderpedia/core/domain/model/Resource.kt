@@ -3,13 +3,11 @@ package com.example.wanderpedia.core.domain.model
 sealed class Resource<out D> {
     data class Success<out D>(val data: D) : Resource<D>()
     data class Error(val error: Throwable) : Resource<Nothing>()
-    data object Loading : Resource<Nothing>()
 
     override fun toString(): String {
         return when (this) {
             is Success<*> -> "Success[data=$data]"
             is Error -> "Error[error=$error]"
-            Loading -> "Loading"
         }
     }
 
@@ -17,7 +15,6 @@ sealed class Resource<out D> {
         get() = when (this) {
             is Success -> null
             is Error -> error
-            Loading -> null
         }
 }
 

@@ -50,6 +50,7 @@ fun SignInContent(
     password: String,
     loading: Boolean,
     isPasswordHidden: Boolean,
+    isValuedSignInWithEmail: Boolean,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onForgetPasswordClick: () -> Unit,
@@ -99,6 +100,7 @@ fun SignInContent(
             Spacer(modifier = Modifier.height(16.dp))
             SignButtonField(
                 loading = loading,
+                isValuedSignInWithEmail = isValuedSignInWithEmail,
                 onSignWithEmailInClick = onSignWithEmailInClick,
                 onSignWithGoogle = onSignWithGoogle
             )
@@ -124,6 +126,7 @@ private fun SignInContentPrev() {
             onSignUpClick = {},
             onNavigateBack = {},
             isPasswordHidden = false,
+            isValuedSignInWithEmail = false,
             onPasswordHiddenClick = {},
         )
     }
@@ -185,6 +188,7 @@ private fun EmailField(
 private fun SignButtonField(
     modifier: Modifier = Modifier,
     loading: Boolean,
+    isValuedSignInWithEmail: Boolean,
     onSignWithEmailInClick: () -> Unit,
     onSignWithGoogle: () -> Unit
 ) {
@@ -199,7 +203,7 @@ private fun SignButtonField(
         }
         Column {
             DefaultButton(
-                enabled = !loading,
+                enabled = !loading && isValuedSignInWithEmail,
                 onClick = onSignWithEmailInClick,
             ) {
                 Text(text = "Sign In")
