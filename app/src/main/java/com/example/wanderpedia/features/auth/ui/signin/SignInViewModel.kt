@@ -1,16 +1,13 @@
 package com.example.wanderpedia.features.auth.ui.signin
 
 import android.content.Context
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.viewModelScope
-import com.example.wanderpedia.R
 import com.example.wanderpedia.core.di.IoDispatcher
+import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.ui.BaseViewModel
+import com.example.wanderpedia.features.auth.domain.usecase.GetGoogleCredentialUseCase
 import com.example.wanderpedia.features.auth.domain.usecase.SignInWithEmailUseCase
 import com.example.wanderpedia.features.auth.domain.usecase.SignInWithGoogleUseCase
-import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -21,6 +18,7 @@ class SignInViewModel
 @Inject constructor(
     private val signInWithEmailUseCase: SignInWithEmailUseCase,
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val credentialUseCase: GetGoogleCredentialUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @IoDispatcher private val mainDispatcher: CoroutineDispatcher
 ) : BaseViewModel<SignInState, SignInEvent, SignInEffect>(
@@ -31,9 +29,15 @@ class SignInViewModel
     fun signInWithGoogle(context: Context) {
         viewModelScope.launch(mainDispatcher) {
             sendEvent(SignInEvent.UpdateLoading(true))
-            val googleIdTokenCredential = createGoogleCredential(context)
-            val result = signInWithGoogleUseCase(googleIdTokenCredential)
+
+            val credential = credentialUseCase(context)
+            val result = when (credential) {
+                is Resource.Error -> Resource.Error(credential.error)
+                is Resource.Success -> signInWithGoogleUseCase(credential.data)
+                Resource.Loading -> Resource.Loading
+            }
             sendEventForEffect(SignInEvent.SignInWithGoogle(result))
+
             sendEvent(SignInEvent.UpdateLoading(false))
         }
     }
@@ -53,24 +57,5 @@ class SignInViewModel
 
     fun onSignUpClick() {
         sendEffect(SignInEffect.NavigateToSignUp)
-    }
-
-    private suspend fun createGoogleCredential(context: Context): GoogleIdTokenCredential {
-        val signInWithGoogleOption = GetSignInWithGoogleOption
-            .Builder(serverClientId = context.getString(R.string.default_web_client_id))
-            .build()
-
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(signInWithGoogleOption)
-            .build()
-
-        val result = CredentialManager.create(context).getCredential(
-            request = request,
-            context = context
-        )
-
-        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
-
-        return googleIdTokenCredential
     }
 }

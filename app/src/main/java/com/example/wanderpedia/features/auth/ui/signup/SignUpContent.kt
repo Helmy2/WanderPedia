@@ -1,4 +1,4 @@
-package com.example.wanderpedia.features.auth.ui.signin
+package com.example.wanderpedia.features.auth.ui.signup
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,25 +41,30 @@ import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.R
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultButton
+import com.example.wanderpedia.core.ui.component.DefaultDialog
 import com.example.wanderpedia.core.ui.component.DefaultTextField
 import com.example.wanderpedia.core.ui.theme.WanderPediaTheme
 
 
 @Composable
-fun SignInContent(
+fun SignUpContent(
     email: String,
     password: String,
     loading: Boolean,
-    isPasswordHidden: Boolean,
+    showDialog: Boolean,
+    isPasswordVisible: Boolean,
+    isValuedEmail: Boolean,
+    isValuedPassword: Boolean,
+    passwordSupportingText: String,
+    emailSupportingText: String,
+    modifier: Modifier = Modifier,
+    onDismissDialog: () -> Unit,
+    onBackClick: () -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onForgetPasswordClick: () -> Unit,
+    onPasswordHiddenClick: (Boolean) -> Unit,
     onSignWithEmailInClick: () -> Unit,
     onSignWithGoogle: () -> Unit,
-    onSignUpClick: () -> Unit,
-    onNavigateBack: () -> Unit,
-    onPasswordHiddenClick: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -66,13 +72,20 @@ fun SignInContent(
             .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center,
     ) {
-        BackButton(
-            onClick = onNavigateBack, modifier = Modifier
-                .padding(32.dp)
-                .align(Alignment.TopStart)
+        DialogField(
+            showDialog = showDialog,
+            onDismissRequest = onDismissDialog,
         )
+
+        BackButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(32.dp)
+        )
+
         Column(
-            Modifier
+            modifier
                 .fillMaxHeight()
                 .fillMaxWidth(.8f),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
@@ -83,18 +96,16 @@ fun SignInContent(
             EmailField(
                 email = email,
                 onValueChange = onEmailChange,
-                modifier = Modifier.fillMaxWidth(),
+                isValuedEmail = isValuedEmail,
+                supportingText = { Text(text = emailSupportingText) }
             )
             PasswordField(
                 password = password,
                 onValueChange = onPasswordChange,
-                isHidden = isPasswordHidden,
+                isHidden = !isPasswordVisible,
                 onIsHiddenChange = onPasswordHiddenClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-            ForgetPasswordField(
-                modifier = Modifier.align(Alignment.End),
-                onClick = onForgetPasswordClick,
+                isValuedPassword = isValuedPassword,
+                supportingText = { Text(text = passwordSupportingText) }
             )
             Spacer(modifier = Modifier.height(16.dp))
             SignButtonField(
@@ -102,29 +113,74 @@ fun SignInContent(
                 onSignWithEmailInClick = onSignWithEmailInClick,
                 onSignWithGoogle = onSignWithGoogle
             )
-            SignUpField(onClick = onSignUpClick)
+
+            SignInField(onClick = onBackClick)
         }
     }
 }
 
+@Composable
+private fun SignButtonField(
+    modifier: Modifier = Modifier,
+    loading: Boolean,
+    onSignWithEmailInClick: () -> Unit,
+    onSignWithGoogle: () -> Unit
+) {
+    Box(
+        modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        AnimatedVisibility(loading) {
+            CircularProgressIndicator(
+                modifier = Modifier,
+            )
+        }
+        Column {
+            DefaultButton(
+                enabled = !loading,
+                onClick = onSignWithEmailInClick,
+            ) {
+                Text(text = "Sign Up")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            DefaultButton(
+                enabled = !loading,
+                onClick = onSignWithGoogle
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.google),
+                    contentDescription = "Google logo"
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Sign up with Google",
+                )
+            }
+        }
+    }
+}
 
 @Preview(showSystemUi = true)
 @Composable
-private fun SignInContentPrev() {
+private fun SignUpContentPrev() {
     WanderPediaTheme {
-        SignInContent(
+        SignUpContent(
             email = "",
             password = "",
             loading = false,
+            showDialog = false,
+            isPasswordVisible = false,
+            isValuedPassword = false,
+            isValuedEmail = false,
+            passwordSupportingText = "",
+            emailSupportingText = "",
+            onDismissDialog = {},
+            onBackClick = {},
             onEmailChange = {},
             onPasswordChange = {},
-            onForgetPasswordClick = {},
-            onSignWithEmailInClick = {},
-            onSignWithGoogle = {},
-            onSignUpClick = {},
-            onNavigateBack = {},
-            isPasswordHidden = false,
             onPasswordHiddenClick = {},
+            onSignWithEmailInClick = {},
+            onSignWithGoogle = {}
         )
     }
 }
@@ -134,10 +190,10 @@ private fun SignInContentPrev() {
 private fun PasswordField(
     password: String,
     isHidden: Boolean,
-    isValuedPassword: Boolean = true,
+    isValuedPassword: Boolean,
     onValueChange: (String) -> Unit,
     onIsHiddenChange: (Boolean) -> Unit,
-    supportingText: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)?,
     modifier: Modifier = Modifier.Companion
 ) {
     OutlinedTextField(
@@ -167,12 +223,16 @@ private fun PasswordField(
 private fun EmailField(
     email: String,
     onValueChange: (String) -> Unit,
+    isValuedEmail: Boolean = true,
+    supportingText: @Composable (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     DefaultTextField(
         value = email,
         onValueChange = onValueChange,
         label = { Text("Email") },
+        isError = !isValuedEmail,
+        supportingText = if (isValuedEmail) null else supportingText,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Email,
@@ -182,43 +242,35 @@ private fun EmailField(
 }
 
 @Composable
-private fun SignButtonField(
+private fun DialogField(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    loading: Boolean,
-    onSignWithEmailInClick: () -> Unit,
-    onSignWithGoogle: () -> Unit
 ) {
-    Box(
-        modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        AnimatedVisibility(loading) {
-            CircularProgressIndicator(
-                modifier = Modifier,
-            )
-        }
-        Column {
-            DefaultButton(
-                enabled = !loading,
-                onClick = onSignWithEmailInClick,
-            ) {
-                Text(text = "Sign In")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            DefaultButton(
-                enabled = !loading,
-                onClick = onSignWithGoogle
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google logo"
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Sign in with Google",
-                )
-            }
-        }
+    if (showDialog) {
+        DefaultDialog(
+            onDismissRequest = onDismissRequest,
+            content = {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Sign Up Successfully",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Text(
+                        text = "You have successfully signed up for the app",
+                        style = MaterialTheme.typography.bodySmall,
+                        minLines = 2
+                    )
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+                    TextButton(
+                        onClick = onDismissRequest, modifier = Modifier.align(Alignment.End)
+                    ) { Text("Confirm") }
+                }
+            },
+            modifier = modifier
+        )
     }
 }
 
@@ -227,40 +279,22 @@ private fun TitleField(
     modifier: Modifier = Modifier
 ) {
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Welcome Back!", style = MaterialTheme.typography.headlineMedium)
+        Text(text = "Create Account", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Please sign in to your account", style = MaterialTheme.typography.bodySmall
+            text = "Please fill the form to continue", style = MaterialTheme.typography.bodySmall
         )
     }
 }
 
 
 @Composable
-private fun ForgetPasswordField(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .clickable { onClick() },
-    ) {
-        Text(
-            text = "Forget Password?",
-            modifier = Modifier.padding(4.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
-}
-
-@Composable
-private fun SignUpField(
+private fun SignInField(
     modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
     Row(modifier.padding(8.dp)) {
         Text(
-            text = "Don't have an Account?", style = MaterialTheme.typography.bodySmall
+            text = "have an Account?", style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.width(4.dp))
         Box(
@@ -269,7 +303,7 @@ private fun SignUpField(
                 .clickable { onClick() },
         ) {
             Text(
-                text = "Sign Up",
+                text = "Sign In",
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodySmall
             )

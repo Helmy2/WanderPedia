@@ -3,7 +3,7 @@ package com.example.wanderpedia.core.domain.model
 sealed class Resource<out D> {
     data class Success<out D>(val data: D) : Resource<D>()
     data class Error(val error: Throwable) : Resource<Nothing>()
-    object Loading : Resource<Nothing>()
+    data object Loading : Resource<Nothing>()
 
     override fun toString(): String {
         return when (this) {
@@ -29,4 +29,7 @@ inline fun <T, R> T.safeResource(block: T.() -> R): Resource<R> {
         Resource.Error(e)
     }
 }
+
+
+
 
