@@ -8,6 +8,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DefaultTextField(
@@ -29,7 +30,7 @@ fun DefaultTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     OutlinedTextField(
-        shape = RoundedCornerShape(25),
+        shape = RoundedCornerShape(16.dp),
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,

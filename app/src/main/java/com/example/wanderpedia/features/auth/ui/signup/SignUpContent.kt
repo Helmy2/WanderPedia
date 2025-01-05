@@ -28,17 +28,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.wanderpedia.R
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultButton
 import com.example.wanderpedia.core.ui.component.DefaultDialog
@@ -64,15 +63,18 @@ fun SignUpContent(
     onPasswordChange: (String) -> Unit,
     onPasswordHiddenClick: (Boolean) -> Unit,
     onSignWithEmailInClick: () -> Unit,
-    onSignWithGoogle: () -> Unit,
     onConfirmClick: () -> Unit,
 ) {
+    LaunchedEffect(showDialog) {
+
+    }
     Box(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center,
     ) {
+
         DialogField(
             showDialog = showDialog,
             onConfirmClick = onConfirmClick,
@@ -115,7 +117,6 @@ fun SignUpContent(
             SignButtonField(
                 loading = loading,
                 onSignWithEmailInClick = onSignWithEmailInClick,
-                onSignWithGoogle = onSignWithGoogle
             )
             SignInField(onClick = onBackClick)
         }
@@ -127,7 +128,6 @@ private fun SignButtonField(
     modifier: Modifier = Modifier,
     loading: Boolean,
     onSignWithEmailInClick: () -> Unit,
-    onSignWithGoogle: () -> Unit
 ) {
     Box(
         modifier,
@@ -138,27 +138,11 @@ private fun SignButtonField(
                 modifier = Modifier,
             )
         }
-        Column {
-            DefaultButton(
-                enabled = !loading,
-                onClick = onSignWithEmailInClick,
-            ) {
-                Text(text = "Sign Up")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            DefaultButton(
-                enabled = !loading,
-                onClick = onSignWithGoogle
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google logo"
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Sign up with Google",
-                )
-            }
+        DefaultButton(
+            enabled = !loading,
+            onClick = onSignWithEmailInClick,
+        ) {
+            Text(text = "Sign Up")
         }
     }
 }
@@ -183,7 +167,6 @@ private fun SignUpContentPrev() {
             onPasswordChange = {},
             onPasswordHiddenClick = {},
             onSignWithEmailInClick = {},
-            onSignWithGoogle = {},
             onConfirmClick = {}
         )
     }

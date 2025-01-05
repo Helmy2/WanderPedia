@@ -26,7 +26,6 @@ sealed class SignUpEvent : ViewEvent {
     data class UpdatePassword(val password: String) : SignUpEvent()
     data class UpdatePasswordAdvisably(val isVisible: Boolean) : SignUpEvent()
     data class SignInWithEmail(val resource: Resource<Unit>) : SignUpEvent()
-    data class SignInWithGoogle(val resource: Resource<Unit>) : SignUpEvent()
 }
 
 sealed class SignUpEffect : ViewEffect {
@@ -61,20 +60,7 @@ class SignUpReducer : Reducer<SignUpState, SignUpEvent, SignUpEffect> {
 
                 val effect = when (event.resource) {
                     is Resource.Success -> {
-                        previousState.copy(showDialog = true)
-                        SignUpEffect.SuccessToSignUp
-                    }
-
-                    is Resource.Error -> SignUpEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())
-                }
-                return previousState to effect
-            }
-
-            is SignUpEvent.SignInWithGoogle -> {
-                val effect = when (event.resource) {
-                    is Resource.Success -> {
-                        previousState.copy(showDialog = true)
-                        SignUpEffect.SuccessToSignUp
+                        return previousState.copy(showDialog = true) to null
                     }
 
                     is Resource.Error -> SignUpEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())

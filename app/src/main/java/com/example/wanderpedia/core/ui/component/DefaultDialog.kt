@@ -25,7 +25,7 @@ fun DefaultDialog(
                 .padding(16.dp),
             tonalElevation = AlertDialogDefaults.TonalElevation,
             content = content,
-            shape = RoundedCornerShape(25),
+            shape = RoundedCornerShape(16.dp),
         )
     }
 }

@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wanderpedia.core.ui.component.DefaultSnackbarHost
@@ -20,7 +19,6 @@ fun SignUpScreen(
     onComplete: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel.effect) {
@@ -58,7 +56,6 @@ fun SignUpScreen(
             onSignWithEmailInClick = viewModel::signUpWithEmail,
             onConfirmClick = viewModel::navigateSuccess,
             onDismissDialog = { viewModel.updateDialogValue(false) },
-            onSignWithGoogle = { viewModel.signUpWithGoogle(context) },
             modifier = Modifier.padding(padding),
         )
     }

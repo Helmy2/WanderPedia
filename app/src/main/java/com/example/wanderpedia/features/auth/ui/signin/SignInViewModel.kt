@@ -20,14 +20,13 @@ class SignInViewModel
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
     private val credentialUseCase: GetGoogleCredentialUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @IoDispatcher private val mainDispatcher: CoroutineDispatcher
 ) : BaseViewModel<SignInState, SignInEvent, SignInEffect>(
     initialState = SignInState(),
     reducer = SignInReducer(),
 ) {
 
     fun signInWithGoogle(context: Context) {
-        viewModelScope.launch(mainDispatcher) {
+        viewModelScope.launch(ioDispatcher) {
             sendEvent(SignInEvent.UpdateLoading(true))
 
             val credential = credentialUseCase(context)

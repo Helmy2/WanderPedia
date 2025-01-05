@@ -60,6 +60,12 @@ class AccountServiceImpl @Inject constructor(
         getCurrentUser().linkWithCredential(credential).await()
     }
 
+    override suspend fun signUpWithEmail(
+        email: String, password: String
+    ) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+    }
+
     override suspend fun signInWithGoogle(
         idToken: String
     ) {
