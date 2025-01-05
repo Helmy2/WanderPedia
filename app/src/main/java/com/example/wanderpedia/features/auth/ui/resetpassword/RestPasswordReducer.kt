@@ -41,7 +41,7 @@ class RestPasswordReducer : Reducer<RestPasswordState, RestPasswordEvent, RestPa
             is RestPasswordEvent.UpdateLoading -> previousState.copy(loading = event.loading) to null
             is RestPasswordEvent.ResetPassword -> {
                 when (event.resource) {
-                    is Resource.Success -> previousState.copy(showDislodge = true) to RestPasswordEffect.SuccessToRestPassword
+                    is Resource.Success -> previousState.copy(showDislodge = true) to null
                     is Resource.Error -> previousState to RestPasswordEffect.ShowErrorToast(event.resource.exception?.localizedMessage.orEmpty())
                 }
             }

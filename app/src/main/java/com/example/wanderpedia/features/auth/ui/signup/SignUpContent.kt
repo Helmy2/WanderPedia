@@ -65,6 +65,7 @@ fun SignUpContent(
     onPasswordHiddenClick: (Boolean) -> Unit,
     onSignWithEmailInClick: () -> Unit,
     onSignWithGoogle: () -> Unit,
+    onConfirmClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -74,6 +75,7 @@ fun SignUpContent(
     ) {
         DialogField(
             showDialog = showDialog,
+            onConfirmClick = onConfirmClick,
             onDismissRequest = onDismissDialog,
         )
 
@@ -171,8 +173,8 @@ private fun SignUpContentPrev() {
             loading = false,
             showDialog = false,
             isPasswordVisible = false,
-            isValuedPassword = false,
             isValuedEmail = false,
+            isValuedPassword = false,
             passwordSupportingText = "",
             emailSupportingText = "",
             onDismissDialog = {},
@@ -181,7 +183,8 @@ private fun SignUpContentPrev() {
             onPasswordChange = {},
             onPasswordHiddenClick = {},
             onSignWithEmailInClick = {},
-            onSignWithGoogle = {}
+            onSignWithGoogle = {},
+            onConfirmClick = {}
         )
     }
 }
@@ -246,6 +249,7 @@ private fun EmailField(
 private fun DialogField(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
+    onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (showDialog) {
@@ -266,7 +270,7 @@ private fun DialogField(
                         modifier = Modifier.height(8.dp)
                     )
                     TextButton(
-                        onClick = onDismissRequest, modifier = Modifier.align(Alignment.End)
+                        onClick = onConfirmClick, modifier = Modifier.align(Alignment.End)
                     ) { Text("Confirm") }
                 }
             },

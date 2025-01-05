@@ -2,6 +2,7 @@ package com.example.wanderpedia.core.ui.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -23,7 +24,8 @@ fun DefaultDialog(
                 .wrapContentSize()
                 .padding(16.dp),
             tonalElevation = AlertDialogDefaults.TonalElevation,
-            content = content
+            content = content,
+            shape = RoundedCornerShape(25),
         )
     }
 }

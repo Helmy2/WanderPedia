@@ -7,13 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wanderpedia.core.ui.component.DefaultSnackbarHost
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -27,28 +25,17 @@ fun SignInScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                SignInEffect.NavigateToForgotPassword -> {
-                    onNavigateToRestPassword()
-                }
-
-                SignInEffect.NavigateToSignUp -> {
-                    onNavigateToSignUp()
-                }
-
-                SignInEffect.SuccessSignIn -> {
-                    onComplete()
-                }
-
+                SignInEffect.NavigateToForgotPassword -> onNavigateToRestPassword()
+                SignInEffect.NavigateToSignUp -> onNavigateToSignUp()
+                SignInEffect.SuccessSignIn -> onComplete()
+                SignInEffect.NavigateBack -> onNavigateBack()
                 is SignInEffect.ShowErrorToast -> {
-                    scope.launch {
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        snackbarHostState.showSnackbar(it.message)
-                    }
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(it.message)
                 }
             }
         }
@@ -73,7 +60,7 @@ fun SignInScreen(
             onSignWithEmailInClick = viewModel::signInWithEmail,
             onSignWithGoogle = { viewModel.signInWithGoogle(context) },
             onSignUpClick = viewModel::onSignUpClick,
-            onNavigateBack = onNavigateBack,
+            onNavigateBack = viewModel::navigateBack,
             modifier = Modifier.padding(padding)
         )
     }

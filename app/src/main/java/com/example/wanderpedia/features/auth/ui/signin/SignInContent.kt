@@ -24,7 +24,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -143,8 +142,7 @@ private fun PasswordField(
     supportingText: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier.Companion
 ) {
-    OutlinedTextField(
-        shape = RoundedCornerShape(8.dp),
+    DefaultTextField(
         value = password,
         onValueChange = onValueChange,
         isError = !isValuedPassword,
@@ -197,9 +195,7 @@ private fun SignButtonField(
         contentAlignment = Alignment.Center,
     ) {
         AnimatedVisibility(loading) {
-            CircularProgressIndicator(
-                modifier = Modifier,
-            )
+            CircularProgressIndicator()
         }
         Column {
             DefaultButton(

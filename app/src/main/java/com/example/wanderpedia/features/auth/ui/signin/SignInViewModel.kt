@@ -57,4 +57,8 @@ class SignInViewModel
     fun onSignUpClick() {
         sendEffect(SignInEffect.NavigateToSignUp)
     }
+
+    fun navigateBack() {
+        sendEffect(SignInEffect.NavigateBack)
+    }
 }

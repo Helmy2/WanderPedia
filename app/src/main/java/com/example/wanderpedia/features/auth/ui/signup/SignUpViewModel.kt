@@ -26,6 +26,13 @@ class SignUpViewModel @Inject constructor(
     reducer = SignUpReducer(),
 ) {
 
+    fun navigateSuccess() {
+        sendEffect(SignUpEffect.SuccessToSignUp)
+    }
+
+    fun navigateBack() {
+        sendEffect(SignUpEffect.NavigateBack)
+    }
     fun updateDialogValue(show: Boolean) {
         sendEvent(SignUpEvent.UpdateShowDialog(show))
     }

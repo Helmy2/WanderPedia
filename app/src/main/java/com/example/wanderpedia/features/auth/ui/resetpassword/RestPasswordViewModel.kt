@@ -18,6 +18,14 @@ class RestPasswordViewModel @Inject constructor(
     reducer = RestPasswordReducer()
 ) {
 
+    fun navigateSuccess() {
+        sendEffect(RestPasswordEffect.SuccessToRestPassword)
+    }
+
+    fun navigateBack() {
+        sendEffect(RestPasswordEffect.NavigateBack)
+    }
+
     fun updateDialog(isVisible: Boolean) {
         sendEvent(RestPasswordEvent.UpdateShowDialog(isVisible))
     }

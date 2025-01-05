@@ -1,5 +1,6 @@
 package com.example.wanderpedia.features.auth.ui.resetpassword
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,7 +36,7 @@ fun RestPasswordContent(
     isEmailValid: Boolean,
     loading: Boolean,
     modifier: Modifier = Modifier,
-    onComplete: () -> Unit,
+    onConfirmClick: () -> Unit,
     onNavigateBack: () -> Unit,
     onDismissRequest: () -> Unit,
     onEmailChange: (String) -> Unit,
@@ -63,8 +65,12 @@ fun RestPasswordContent(
                         Spacer(
                             modifier = Modifier.height(8.dp)
                         )
+
                         TextButton(
-                            onClick = onComplete,
+                            onClick = {
+                                onDismissRequest()
+                                onConfirmClick()
+                            },
                             modifier = Modifier.align(Alignment.End)
                         ) { Text("Confirm") }
                     }
@@ -102,13 +108,36 @@ fun RestPasswordContent(
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
-            DefaultButton(
-                onClick = resetPasswordClick,
-                enabled = !loading && isEmailValid,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = "Reset Password")
-            }
+            SignButtonField(
+                loading = loading,
+                enabled = isEmailValid,
+                resetPasswordClick = resetPasswordClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SignButtonField(
+    modifier: Modifier = Modifier,
+    loading: Boolean,
+    enabled: Boolean,
+    resetPasswordClick: () -> Unit,
+) {
+    Box(
+        modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        AnimatedVisibility(loading) {
+            CircularProgressIndicator()
+        }
+
+        DefaultButton(
+            onClick = resetPasswordClick,
+            enabled = !loading && enabled,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(text = "Reset Password")
         }
     }
 }
@@ -120,7 +149,7 @@ private fun ForgetPasswordContentPrev() {
         RestPasswordContent(
             email = "",
             showDislodge = false,
-            onComplete = {},
+            onConfirmClick = {},
             onNavigateBack = {},
             onDismissRequest = {},
             onEmailChange = {},

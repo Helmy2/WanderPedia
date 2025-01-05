@@ -11,7 +11,7 @@ data class SignInState(
     val email: String = "",
     val password: String = "",
     val loading: Boolean = false,
-    val isPasswordHidden: Boolean = false,
+    val isPasswordHidden: Boolean = true,
 ) : ViewState {
     val isValuedSignInWithEmail: Boolean = email.isNotBlank() && password.isNotBlank()
 }
@@ -28,6 +28,7 @@ sealed class SignInEvent : ViewEvent {
 
 sealed class SignInEffect : ViewEffect {
     object NavigateToSignUp : SignInEffect()
+    object NavigateBack : SignInEffect()
     object NavigateToForgotPassword : SignInEffect()
     object SuccessSignIn : SignInEffect()
     class ShowErrorToast(val message: String) : SignInEffect()

@@ -27,7 +27,7 @@ fun DefaultButton(
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
         contentPadding = PaddingValues(vertical = 16.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(25),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor, contentColor = contentColor
         )

@@ -29,7 +29,7 @@ fun DefaultTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     OutlinedTextField(
-        shape = RoundedCornerShape(20),
+        shape = RoundedCornerShape(25),
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,

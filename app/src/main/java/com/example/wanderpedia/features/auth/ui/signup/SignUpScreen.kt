@@ -2,19 +2,16 @@ package com.example.wanderpedia.features.auth.ui.signup
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wanderpedia.core.ui.component.DefaultSnackbarHost
-import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpScreen(
@@ -25,7 +22,6 @@ fun SignUpScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
@@ -33,13 +29,8 @@ fun SignUpScreen(
                 SignUpEffect.NavigateBack -> onNavigateBack()
                 SignUpEffect.SuccessToSignUp -> onComplete()
                 is SignUpEffect.ShowErrorToast -> {
-                    scope.launch {
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        snackbarHostState.showSnackbar(
-                            message = it.message,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(message = it.message)
                 }
             }
         }
@@ -56,18 +47,19 @@ fun SignUpScreen(
             loading = state.loading,
             showDialog = state.showDialog,
             isPasswordVisible = state.isPasswordVisible,
-            isValuedPassword = state.passwordSupportingText.isEmpty(),
             isValuedEmail = state.emailSupportingText.isEmpty(),
+            isValuedPassword = state.passwordSupportingText.isEmpty(),
             passwordSupportingText = state.passwordSupportingText,
             emailSupportingText = state.emailSupportingText,
-            modifier = Modifier.padding(padding),
-            onDismissDialog = { viewModel.updateDialogValue(false) },
-            onBackClick = onNavigateBack,
+            onBackClick = viewModel::navigateBack,
             onEmailChange = viewModel::updateEmail,
             onPasswordChange = viewModel::updatePassword,
             onPasswordHiddenClick = viewModel::updatePasswordVisibility,
             onSignWithEmailInClick = viewModel::signUpWithEmail,
-            onSignWithGoogle = { viewModel.signUpWithGoogle(context) }
+            onConfirmClick = viewModel::navigateSuccess,
+            onDismissDialog = { viewModel.updateDialogValue(false) },
+            onSignWithGoogle = { viewModel.signUpWithGoogle(context) },
+            modifier = Modifier.padding(padding),
         )
     }
 }
