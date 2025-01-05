@@ -25,9 +25,9 @@ kotlinSerialization = "1.7.3"
 padding = "3.3.5"
 playServicesAuth = "21.3.0"
 retrofit = "2.11.0"
+kotlinxSerializationConverter = "2.11.0"
 roomKtx = "2.6.1"
 coilCompose = "2.7.0"
-converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.1"
 googleServices = "4.4.2"
@@ -58,9 +58,9 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 
 # retrofit and json
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+converter-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "kotlinxSerializationConverter" }
 
 # Firebase and Credential
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }

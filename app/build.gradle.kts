@@ -15,6 +15,7 @@ android {
     defaultConfig {
         applicationId = "com.example.wanderpedia"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -82,7 +83,7 @@ dependencies {
     implementation(libs.logging.interceptor)
 
     // JSON Parsing
-    implementation(libs.converter.gson)
+    implementation(libs.converter.serialization)
     implementation(libs.kotlin.serialization.json)
 
     // coil

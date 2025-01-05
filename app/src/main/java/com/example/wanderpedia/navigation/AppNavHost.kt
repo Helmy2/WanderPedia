@@ -16,7 +16,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -57,16 +56,6 @@ fun AppNavHost() {
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
 
-    LaunchedEffect(selectedIndex) {
-        navController.navigate(route = TOP_LEVEL_ROUTES[selectedIndex].route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-
     Scaffold(
         bottomBar = {
             NavigationBar(
@@ -82,7 +71,16 @@ fun AppNavHost() {
                                     contentDescription = topLevelRoute.name
                                 )
                             },
-                            onClick = { selectedIndex = i }
+                            onClick = {
+                                selectedIndex = i
+                                navController.navigate(route = topLevelRoute.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
                         )
                     }
                 }
