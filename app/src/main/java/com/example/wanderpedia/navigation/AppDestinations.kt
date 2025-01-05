@@ -7,8 +7,17 @@ import kotlinx.serialization.Serializable
 @Immutable
 sealed class AppDestinations {
     @Serializable
-    object Auth : AppDestinations()
+    data object Auth : AppDestinations()
 
     @Serializable
-    object Home : AppDestinations()
+    data object Home : AppDestinations()
+
+    @Serializable
+    data object Discover : AppDestinations()
+
+    @Serializable
+    data object Favorite : AppDestinations()
+
+    @Serializable
+    data object Profile : AppDestinations()
 }
