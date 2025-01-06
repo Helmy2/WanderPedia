@@ -1,5 +1,6 @@
 package com.example.wanderpedia.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -17,21 +18,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
 
 
-data class TopLevelRoute<T : Any>(
-    val name: String, val route: T, val icon: ImageVector
+data class TopLevelRoute(
+    val name: String, val route: AppDestinations, val icon: ImageVector
 )
 
 val TOP_LEVEL_ROUTES = listOf(
@@ -53,38 +52,39 @@ val TOP_LEVEL_ROUTES = listOf(
 fun AppNavHost() {
     val navController = rememberNavController()
     val stateDestinations = AppDestinations.Home
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                content = {
-                    TOP_LEVEL_ROUTES.forEachIndexed { i, topLevelRoute ->
-                        NavigationBarItem(
-                            alwaysShowLabel = false,
-                            label = { Text(text = topLevelRoute.name) },
-                            selected = i == selectedIndex,
-                            icon = {
-                                Icon(
-                                    topLevelRoute.icon,
-                                    contentDescription = topLevelRoute.name
-                                )
-                            },
-                            onClick = {
-                                selectedIndex = i
-                                navController.navigate(route = topLevelRoute.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+            AnimatedVisibility(TOP_LEVEL_ROUTES.any { it.route.hashCode() == currentDestination?.id }) {
+                NavigationBar(
+                    content = {
+                        TOP_LEVEL_ROUTES.forEachIndexed { i, topLevelRoute ->
+                            NavigationBarItem(
+                                alwaysShowLabel = false,
+                                label = { Text(text = topLevelRoute.name) },
+                                selected = currentDestination?.id == topLevelRoute.route.hashCode(),
+                                icon = {
+                                    Icon(
+                                        topLevelRoute.icon,
+                                        contentDescription = topLevelRoute.name
+                                    )
+                                },
+                                onClick = {
+                                    navController.navigate(route = topLevelRoute.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
         NavHost(
@@ -111,6 +111,4 @@ fun AppNavHost() {
             }
         }
     }
-
-
 }
