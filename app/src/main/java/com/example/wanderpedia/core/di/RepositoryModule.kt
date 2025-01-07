@@ -1,7 +1,9 @@
 package com.example.wanderpedia.core.di
 
+import com.example.wanderpedia.core.data.repository.GoogleCredentialRepositoryImpl
 import com.example.wanderpedia.core.data.repository.UserRepositoryImpl
 import com.example.wanderpedia.core.data.repository.WondersRepositoryImpl
+import com.example.wanderpedia.core.domain.repository.CredentialRepository
 import com.example.wanderpedia.core.domain.repository.UserRepository
 import com.example.wanderpedia.core.domain.repository.WondersRepository
 import dagger.Binds
@@ -24,4 +26,10 @@ abstract class RepositoryModule {
     abstract fun bindWonderRepository(
         wondersRepositoryImpl: WondersRepositoryImpl
     ): WondersRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCredentialRepository(
+        googleCredentialRepositoryImpl: GoogleCredentialRepositoryImpl
+    ): CredentialRepository
 }

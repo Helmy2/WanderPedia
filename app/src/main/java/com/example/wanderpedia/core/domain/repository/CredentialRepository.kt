@@ -1,4 +1,4 @@
-package com.example.wanderpedia.features.auth.domain.repository
+package com.example.wanderpedia.core.domain.repository
 
 import android.content.Context
 import com.example.wanderpedia.core.domain.model.Resource

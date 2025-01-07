@@ -51,7 +51,7 @@ val TOP_LEVEL_ROUTES = listOf(
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
-    val stateDestinations = AppDestinations.Home
+    val stateDestinations = AppDestinations.Auth
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 

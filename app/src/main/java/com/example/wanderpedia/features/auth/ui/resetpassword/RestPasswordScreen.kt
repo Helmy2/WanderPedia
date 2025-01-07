@@ -24,9 +24,9 @@ fun RestPasswordScreen(
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                RestPasswordEffect.NavigateBack -> onNavigateBack()
-                RestPasswordEffect.SuccessToRestPassword -> onNavigateBack()
-                is RestPasswordEffect.ShowErrorToast -> {
+                RestPasswordContract.Effect.NavigateBack -> onNavigateBack()
+                RestPasswordContract.Effect.NavigateNext -> onNavigateBack()
+                is RestPasswordContract.Effect.ShowErrorToast -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
                     snackbarHostState.showSnackbar(it.message)
                 }
@@ -41,14 +41,14 @@ fun RestPasswordScreen(
     ) { padding ->
         RestPasswordContent(
             email = state.email,
-            showDislodge = state.showDislodge,
+            showDislodge = state.showDialog,
             loading = state.loading,
             isEmailValid = state.isEmailValid,
-            onNavigateBack = viewModel::navigateBack,
-            onEmailChange = viewModel::updateEmail,
-            resetPasswordClick = viewModel::resetPassword,
-            onConfirmClick = viewModel::navigateSuccess,
-            onDismissRequest = { viewModel.updateDialog(false) },
+            onNavigateBack = { viewModel.handleEvents(RestPasswordContract.Event.NavigateBack) },
+            onEmailChange = { viewModel.handleEvents(RestPasswordContract.Event.UpdateEmail(it)) },
+            resetPasswordClick = { viewModel.handleEvents(RestPasswordContract.Event.ResetPassword) },
+            onConfirmClick = { viewModel.handleEvents(RestPasswordContract.Event.NavigateNext) },
+            onDismissRequest = { viewModel.handleEvents(RestPasswordContract.Event.DismissDialog) },
             modifier = Modifier.padding(padding),
         )
     }

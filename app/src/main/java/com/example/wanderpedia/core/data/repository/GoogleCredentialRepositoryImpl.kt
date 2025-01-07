@@ -1,11 +1,11 @@
-package com.example.wanderpedia.features.auth.data.repository
+package com.example.wanderpedia.core.data.repository
 
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.example.wanderpedia.R
 import com.example.wanderpedia.core.domain.model.Resource
-import com.example.wanderpedia.features.auth.domain.repository.CredentialRepository
+import com.example.wanderpedia.core.domain.repository.CredentialRepository
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import javax.inject.Inject

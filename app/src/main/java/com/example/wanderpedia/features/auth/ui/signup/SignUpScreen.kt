@@ -24,9 +24,9 @@ fun SignUpScreen(
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                SignUpEffect.NavigateBack -> onNavigateBack()
-                SignUpEffect.SuccessToSignUp -> onComplete()
-                is SignUpEffect.ShowErrorToast -> {
+                SignUpContract.Effect.NavigateBack -> onNavigateBack()
+                SignUpContract.Effect.NavigateNext -> onComplete()
+                is SignUpContract.Effect.ShowErrorToast -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
                     snackbarHostState.showSnackbar(message = it.message)
                 }
@@ -49,13 +49,19 @@ fun SignUpScreen(
             isValuedPassword = state.passwordSupportingText.isEmpty(),
             passwordSupportingText = state.passwordSupportingText,
             emailSupportingText = state.emailSupportingText,
-            onBackClick = viewModel::navigateBack,
-            onEmailChange = viewModel::updateEmail,
-            onPasswordChange = viewModel::updatePassword,
-            onPasswordHiddenClick = viewModel::updatePasswordVisibility,
-            onSignWithEmailInClick = viewModel::signUpWithEmail,
-            onConfirmClick = viewModel::navigateSuccess,
-            onDismissDialog = { viewModel.updateDialogValue(false) },
+            onBackClick = { viewModel.handleEvents(SignUpContract.Event.NavigateBack) },
+            onEmailChange = { viewModel.handleEvents(SignUpContract.Event.UpdateEmail(it)) },
+            onPasswordChange = { viewModel.handleEvents(SignUpContract.Event.UpdatePassword(it)) },
+            onSignWithEmailInClick = { viewModel.handleEvents(SignUpContract.Event.SignInWithEmail) },
+            onConfirmClick = { viewModel.handleEvents(SignUpContract.Event.NavigateNext) },
+            onDismissDialog = { viewModel.handleEvents(SignUpContract.Event.NavigateBack) },
+            onPasswordHiddenClick = {
+                viewModel.handleEvents(
+                    SignUpContract.Event.UpdatePasswordVisibility(
+                        it
+                    )
+                )
+            },
             modifier = Modifier.padding(padding),
         )
     }

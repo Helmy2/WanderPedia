@@ -1,7 +1,7 @@
 package com.example.wanderpedia.features.auth.domain.usecase
 
 import android.content.Context
-import com.example.wanderpedia.features.auth.domain.repository.CredentialRepository
+import com.example.wanderpedia.core.domain.repository.CredentialRepository
 import javax.inject.Inject
 
 class GetGoogleCredentialUseCase @Inject constructor(

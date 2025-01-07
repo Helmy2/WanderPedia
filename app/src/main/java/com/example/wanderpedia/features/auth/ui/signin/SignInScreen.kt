@@ -29,11 +29,11 @@ fun SignInScreen(
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                SignInEffect.NavigateToForgotPassword -> onNavigateToRestPassword()
-                SignInEffect.NavigateToSignUp -> onNavigateToSignUp()
-                SignInEffect.SuccessSignIn -> onComplete()
-                SignInEffect.NavigateBack -> onNavigateBack()
-                is SignInEffect.ShowErrorToast -> {
+                SignInContract.Effect.NavigateToForgotPassword -> onNavigateToRestPassword()
+                SignInContract.Effect.NavigateToSignUp -> onNavigateToSignUp()
+                SignInContract.Effect.NavigateNext -> onComplete()
+                SignInContract.Effect.NavigateBack -> onNavigateBack()
+                is SignInContract.Effect.ShowErrorToast -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
                     snackbarHostState.showSnackbar(it.message)
                 }
@@ -42,25 +42,35 @@ fun SignInScreen(
     }
 
 
-    Scaffold(
-        snackbarHost = {
-            DefaultSnackbarHost(snackbarHostState)
-        }
-    ) { padding ->
+    Scaffold(snackbarHost = {
+        DefaultSnackbarHost(snackbarHostState)
+    }) { padding ->
         SignInContent(
             email = state.email,
             password = state.password,
             loading = state.loading,
-            isPasswordHidden = state.isPasswordHidden,
+            isPasswordHidden = !state.isPasswordVisible,
             isValuedSignInWithEmail = state.isValuedSignInWithEmail,
-            onEmailChange = { viewModel.sendEvent(SignInEvent.UpdateEmail(it)) },
-            onPasswordChange = { viewModel.sendEvent(SignInEvent.UpdatePassword(it)) },
-            onPasswordHiddenClick = { viewModel.sendEvent(SignInEvent.UpdatePasswordAdvisably(it)) },
-            onForgetPasswordClick = viewModel::onRestPasswordClick,
-            onSignWithEmailInClick = viewModel::signInWithEmail,
-            onSignWithGoogle = { viewModel.signInWithGoogle(context) },
-            onSignUpClick = viewModel::onSignUpClick,
-            onNavigateBack = viewModel::navigateBack,
+            onEmailChange = { viewModel.handleEvents(SignInContract.Event.UpdateEmail(it)) },
+            onPasswordChange = { viewModel.handleEvents(SignInContract.Event.UpdatePassword(it)) },
+            onForgetPasswordClick = { viewModel.handleEvents(SignInContract.Event.NavigateToForgotPassword) },
+            onSignWithEmailInClick = { viewModel.handleEvents(SignInContract.Event.SignInWithEmail) },
+            onSignUpClick = { viewModel.handleEvents(SignInContract.Event.NavigateToSignUp) },
+            onNavigateBack = { viewModel.handleEvents(SignInContract.Event.NavigateBack) },
+            onSignWithGoogle = {
+                viewModel.handleEvents(
+                    SignInContract.Event.SignInWithGoogle(
+                        context
+                    )
+                )
+            },
+            onPasswordHiddenClick = {
+                viewModel.handleEvents(
+                    SignInContract.Event.UpdatePasswordVisibility(
+                        it
+                    )
+                )
+            },
             modifier = Modifier.padding(padding)
         )
     }

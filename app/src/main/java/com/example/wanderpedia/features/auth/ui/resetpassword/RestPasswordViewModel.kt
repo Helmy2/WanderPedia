@@ -2,6 +2,7 @@ package com.example.wanderpedia.features.auth.ui.resetpassword
 
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
+import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.auth.domain.usecase.ResetPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,33 +14,31 @@ import javax.inject.Inject
 class RestPasswordViewModel @Inject constructor(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) : BaseViewModel<RestPasswordState, RestPasswordEvent, RestPasswordEffect>(
-    initialState = RestPasswordState(),
-    reducer = RestPasswordReducer()
+) : BaseViewModel<RestPasswordContract.State, RestPasswordContract.Event, RestPasswordContract.Effect>(
+    initialState = RestPasswordContract.State(),
 ) {
-
-    fun navigateSuccess() {
-        sendEffect(RestPasswordEffect.SuccessToRestPassword)
-    }
-
-    fun navigateBack() {
-        sendEffect(RestPasswordEffect.NavigateBack)
-    }
-
-    fun updateDialog(isVisible: Boolean) {
-        sendEvent(RestPasswordEvent.UpdateShowDialog(isVisible))
-    }
-
-    fun updateEmail(email: String) {
-        sendEvent(RestPasswordEvent.UpdateEmail(email))
-    }
-
-    fun resetPassword() {
-        viewModelScope.launch(ioDispatcher) {
-            sendEvent(RestPasswordEvent.UpdateLoading(true))
-            val result = resetPasswordUseCase(state.value.email)
-            sendEventForEffect(RestPasswordEvent.ResetPassword(result))
-            sendEvent(RestPasswordEvent.UpdateLoading(false))
+    override fun handleEvents(event: RestPasswordContract.Event) {
+        when (event) {
+            is RestPasswordContract.Event.UpdateEmail -> setState { copy(email = event.email) }
+            is RestPasswordContract.Event.DismissDialog -> setState { copy(showDialog = false) }
+            is RestPasswordContract.Event.UpdateLoading -> setState { copy(loading = event.loading) }
+            is RestPasswordContract.Event.NavigateBack -> setEffect { RestPasswordContract.Effect.NavigateBack }
+            is RestPasswordContract.Event.NavigateNext -> setEffect { RestPasswordContract.Effect.NavigateNext }
+            is RestPasswordContract.Event.ResetPassword -> resetPassword()
         }
     }
+
+    private fun resetPassword() {
+        viewModelScope.launch(ioDispatcher) {
+            setState { copy(loading = true) }
+            val result = resetPasswordUseCase(state.value.email)
+            when (result) {
+                is Resource.Error -> setEffect { RestPasswordContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
+                is Resource.Success -> setState { copy(showDialog = true) }
+            }
+            setState { copy(loading = false) }
+        }
+    }
+
+
 }
