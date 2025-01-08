@@ -3,8 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.android.ksp)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
 }
 
@@ -88,6 +89,7 @@ dependencies {
 
     // coil
     implementation(libs.coil.compose)
+    implementation(libs.compose.placeholder.material3)
 
     // splashscreen
     implementation(libs.androidx.core.splashscreen)

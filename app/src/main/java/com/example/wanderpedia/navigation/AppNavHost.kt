@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
 
@@ -51,7 +52,7 @@ val TOP_LEVEL_ROUTES = listOf(
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
-    val stateDestinations = AppDestinations.Auth
+    val stateDestinations = AppDestinations.Home
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -99,7 +100,9 @@ fun AppNavHost() {
                     navController.navigate(AppDestinations.Home)
                 },
             )
-            homeNavigation()
+            homeNavigation {
+                navController.navigate(AppDestinations.Detail(it))
+            }
             composable<AppDestinations.Discover> {
                 Text("Discover")
             }
@@ -108,6 +111,10 @@ fun AppNavHost() {
             }
             composable<AppDestinations.Profile> {
                 Text("Profile")
+            }
+            composable<AppDestinations.Detail> {
+                val args = it.toRoute<AppDestinations.Detail>()
+                Text(args.toString())
             }
         }
     }

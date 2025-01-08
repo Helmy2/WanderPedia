@@ -20,4 +20,7 @@ sealed class AppDestinations {
 
     @Serializable
     data object Profile : AppDestinations()
+
+    @Serializable
+    data class Detail(val id: String) : AppDestinations()
 }

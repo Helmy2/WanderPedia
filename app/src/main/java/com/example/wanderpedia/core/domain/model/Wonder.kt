@@ -1,7 +1,10 @@
 package com.example.wanderpedia.core.domain.model
 
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Wonder(
+    val id: String,
     val buildYear: Int,
     val location: String,
     val name: String,
@@ -14,17 +17,19 @@ data class Wonder(
     val categories: List<Category>,
 )
 
+@Serializable
 sealed class Category(
     val name: String,
 ) {
-    data object SevenWonders : Category("Seven Ancient Wonders")
-    data object SevenModernWonders : Category("Seven Modern Wonders")
-    data object SevenNewWonders : Category("Seven New Wonders")
-    data object Civ5 : Category("Wonder can be found in the video game Civilization VI")
-    data object Civ6 : Category("Wonder can be found in the video game Civilization V")
+    data object AncientWonders : Category("Ancient Wonders")
+    data object ModernWonders : Category("Modern Wonders")
+    data object NewWonders : Category("New Wonders")
+    data object Civ5Wonders : Category("Civilization VI")
+    data object Civ6Wonders : Category("Civilization V")
     data object All : Category("All")
 }
 
+@Serializable
 sealed class TimePeriod(
     val name: String
 ) {

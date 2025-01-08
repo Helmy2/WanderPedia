@@ -104,6 +104,7 @@ class AccountServiceImpl @Inject constructor(
             id = this.uid,
             email = this.email ?: "",
             displayName = this.displayName ?: "",
+            imageUrl = this.photoUrl?.toString() ?: "",
             isAnonymous = this.isAnonymous
         )
     }

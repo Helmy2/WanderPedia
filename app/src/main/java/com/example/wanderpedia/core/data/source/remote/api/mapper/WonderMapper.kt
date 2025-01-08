@@ -6,25 +6,26 @@ import com.example.wanderpedia.core.data.source.remote.api.model.WonderResponse
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.TimePeriod
 import com.example.wanderpedia.core.domain.model.Wonder
+import java.util.UUID
 
 fun CategoryResponse?.toDomain(): Category {
     return when (this) {
-        CategoryResponse.SevenWonders -> Category.SevenWonders
-        CategoryResponse.SevenModernWonders -> Category.SevenModernWonders
-        CategoryResponse.SevenNewWonders -> Category.SevenNewWonders
-        CategoryResponse.Civ5 -> Category.Civ5
-        CategoryResponse.Civ6 -> Category.Civ6
+        CategoryResponse.SevenWonders -> Category.AncientWonders
+        CategoryResponse.SevenModernWonders -> Category.ModernWonders
+        CategoryResponse.SevenNewWonders -> Category.NewWonders
+        CategoryResponse.Civ5 -> Category.Civ5Wonders
+        CategoryResponse.Civ6 -> Category.Civ6Wonders
         else -> Category.All
     }
 }
 
 fun Category.toData(): CategoryResponse? {
     return when (this) {
-        Category.Civ5 -> CategoryResponse.Civ5
-        Category.Civ6 -> CategoryResponse.Civ6
-        Category.SevenModernWonders -> CategoryResponse.SevenModernWonders
-        Category.SevenNewWonders -> CategoryResponse.SevenNewWonders
-        Category.SevenWonders -> CategoryResponse.SevenWonders
+        Category.Civ5Wonders -> CategoryResponse.Civ5
+        Category.Civ6Wonders -> CategoryResponse.Civ6
+        Category.ModernWonders -> CategoryResponse.SevenModernWonders
+        Category.NewWonders -> CategoryResponse.SevenNewWonders
+        Category.AncientWonders -> CategoryResponse.SevenWonders
         Category.All -> null
     }
 }
@@ -43,6 +44,8 @@ fun TimePeriodResponse?.toDomain(): TimePeriod {
 
 fun WonderResponse.toDomain(): Wonder {
     return Wonder(
+        // TODO id is Uuid
+        id = UUID.randomUUID().toString(),
         buildYear = buildYear ?: 0,
         location = location.orEmpty(),
         name = name.orEmpty(),
