@@ -74,8 +74,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Padding
-    implementation(libs.padding)
-    implementation(libs.padding.compose)
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
 
     // Retrofit
     implementation(libs.retrofit)
