@@ -31,7 +31,7 @@ import com.example.wanderpedia.core.domain.model.Wonder
 
 
 @Composable
-fun WonderListField(
+fun WonderListRowField(
     title: String,
     onItemClick: (id: String) -> Unit,
     wonderList: List<Wonder>,
