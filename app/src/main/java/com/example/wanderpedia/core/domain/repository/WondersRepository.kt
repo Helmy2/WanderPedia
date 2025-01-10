@@ -1,13 +1,20 @@
 package com.example.wanderpedia.core.domain.repository
 
+import com.example.wanderpedia.core.data.source.local.model.CachedCategory
+import com.example.wanderpedia.core.data.source.local.model.CachedTimePeriod
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.Wonder
+import kotlinx.coroutines.flow.Flow
 
 interface WondersRepository {
-    suspend fun getWonders(
-        name: String,
-        location: String,
-        category: Category
-    ): Resource<List<Wonder>>
+    suspend fun getWonderById(id: String): Resource<Wonder>
+    fun getAllWonders(): Flow<Resource<List<Wonder>>>
+    fun getWondersByCategory(category: Category): Flow<Resource<List<Wonder>>>
+    fun getWondersBy(
+        nameQuery: String?,
+        locationQuery: String?,
+        timePeriodQuery: CachedTimePeriod?,
+        category: CachedCategory?
+    ): Flow<Resource<List<Wonder>>>
 }

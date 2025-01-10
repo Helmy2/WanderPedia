@@ -1,5 +1,6 @@
 package com.example.wanderpedia.core.domain.model
 
+import com.example.wanderpedia.core.data.source.local.model.CachedCategory
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -40,4 +41,15 @@ sealed class TimePeriod(
     data object EarlyModern : TimePeriod("EarlyModern")
     data object Modern : TimePeriod("Modern")
     data object Unknown : TimePeriod("Unknown")
+}
+
+fun Category.toCached(): CachedCategory {
+    return when (this) {
+        Category.AncientWonders -> CachedCategory.SevenWonders
+        Category.ModernWonders -> CachedCategory.SevenModernWonders
+        Category.NewWonders -> CachedCategory.SevenWonders
+        Category.Civ5Wonders -> CachedCategory.Civ5
+        Category.Civ6Wonders -> CachedCategory.Civ6
+        Category.Unknown -> CachedCategory.Unknown
+    }
 }

@@ -7,6 +7,6 @@ import javax.inject.Inject
 class GetWondersByCategoryUseCase @Inject constructor(
     private val wonderRepository: WondersRepository
 ) {
-    suspend operator fun invoke(category: Category) =
-        wonderRepository.getWonders(name = "", location = "", category = category)
+    operator fun invoke(category: Category) =
+        wonderRepository.getWondersByCategory(category = category)
 }

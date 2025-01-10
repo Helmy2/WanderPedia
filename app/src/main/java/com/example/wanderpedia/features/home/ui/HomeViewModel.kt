@@ -9,6 +9,7 @@ import com.example.wanderpedia.features.home.domain.usecase.GetCurrentUserFlowUs
 import com.example.wanderpedia.features.home.domain.usecase.GetWondersByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,10 +46,11 @@ class HomeViewModel @Inject constructor(
 
     private fun geDataForCategory(category: Category, onSuccess: (WonderList) -> Unit) {
         viewModelScope.launch(ioDispatcher) {
-            val result = getWondersByCategoryUseCase(category)
-            when (result) {
-                is Resource.Error -> setEffect { HomeContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                is Resource.Success -> onSuccess(WonderList(category, result.data))
+            getWondersByCategoryUseCase(category).collectLatest {
+                when (it) {
+                    is Resource.Error -> setEffect { HomeContract.Effect.ShowErrorToast(it.exception?.localizedMessage.orEmpty()) }
+                    is Resource.Success -> onSuccess(WonderList(category, it.data))
+                }
             }
         }
     }
