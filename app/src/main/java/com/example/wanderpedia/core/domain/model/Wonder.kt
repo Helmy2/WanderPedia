@@ -26,7 +26,7 @@ sealed class Category(
     data object NewWonders : Category("New Wonders")
     data object Civ5Wonders : Category("Civilization VI")
     data object Civ6Wonders : Category("Civilization V")
-    data object All : Category("All")
+    data object Unknown : Category("All")
 }
 
 @Serializable

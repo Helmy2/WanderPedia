@@ -1,7 +1,7 @@
 package com.example.wanderpedia.core.data.source.remote.api
 
-import com.example.wanderpedia.core.data.source.remote.api.model.CategoryResponse
-import com.example.wanderpedia.core.data.source.remote.api.model.WonderResponse
+import com.example.wanderpedia.core.data.source.remote.model.CategoryResponse
+import com.example.wanderpedia.core.data.source.remote.model.WonderResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
