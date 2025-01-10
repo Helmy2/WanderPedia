@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -27,55 +28,78 @@ class UserRepositoryImpl @Inject constructor(
 
 
     override suspend fun createAnonymousAccount(
-    ) = safeResource {
-        accountService.createAnonymousAccount()
+    ) = withContext(ioDispatcher) {
+        safeResource {
+            accountService.createAnonymousAccount()
+        }
     }
 
     override suspend fun updateDisplayName(
         newDisplayName: String
-    ) = safeResource {
-        accountService.updateDisplayName(newDisplayName)
+    ) = withContext(ioDispatcher) {
+        safeResource {
+            accountService.updateDisplayName(newDisplayName)
+        }
     }
 
 
     override suspend fun linkAccountWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential) =
-        safeResource {
-            accountService.linkAccountWithGoogle(googleIdTokenCredential.idToken)
-    }
+        withContext(ioDispatcher) {
+            safeResource {
+                accountService.linkAccountWithGoogle(googleIdTokenCredential.idToken)
+            }
+        }
+
 
     override suspend fun linkAccountWithEmail(
         email: String, password: String
-    ) = safeResource {
-        accountService.linkAccountWithEmail(email, password)
+    ) = withContext(ioDispatcher) {
+        safeResource {
+            accountService.linkAccountWithEmail(email, password)
+        }
     }
 
+
     override suspend fun signInWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential) =
-        safeResource {
-            accountService.signInWithGoogle(googleIdTokenCredential.idToken)
-    }
+        withContext(ioDispatcher) {
+            safeResource {
+                accountService.signInWithGoogle(googleIdTokenCredential.idToken)
+            }
+        }
+
 
     override suspend fun signInWithEmail(
         email: String, password: String
-    ) = safeResource {
-        accountService.signInWithEmail(email, password)
+    ) = withContext(ioDispatcher) {
+        safeResource {
+            accountService.signInWithEmail(email, password)
+        }
     }
 
     override suspend fun signUpWithEmail(
         email: String, password: String
-    ) = safeResource {
-        accountService.signUpWithEmail(email, password)
+    ) = withContext(ioDispatcher) {
+        safeResource {
+            accountService.signUpWithEmail(email, password)
+        }
     }
 
-    override suspend fun resetPassword(email: String) = safeResource {
-        accountService.resetPassword(email)
+    override suspend fun resetPassword(email: String) = withContext(ioDispatcher) {
+        safeResource {
+            accountService.resetPassword(email)
+        }
     }
 
-    override suspend fun signOut() = safeResource {
-        accountService.signOut()
+    override suspend fun signOut() = withContext(ioDispatcher) {
+        safeResource {
+            accountService.signOut()
+        }
     }
 
-    override suspend fun deleteAccount() = safeResource {
-        accountService.deleteAccount()
+    override suspend fun deleteAccount() = withContext(ioDispatcher) {
+        safeResource {
+            accountService.deleteAccount()
+        }
     }
 }
 
