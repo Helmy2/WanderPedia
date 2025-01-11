@@ -25,6 +25,10 @@ fun HomeScreen(
                     snackbarHostState.currentSnackbarData?.dismiss()
                     snackbarHostState.showSnackbar(message = it.message)
                 }
+
+                is HomeContract.Effect.NavigateToDetail -> {
+                    navigateToDetail(it.id)
+                }
             }
         }
     }
@@ -35,6 +39,10 @@ fun HomeScreen(
         modernWonders = state.modernWonders,
         newWonders = state.newWonders,
         modifier = modifier,
-        onItemClick = navigateToDetail
+        onItemClick = {
+            viewModel.handleEvents(
+                HomeContract.Event.OnItemClick(it)
+            )
+        }
     )
 }

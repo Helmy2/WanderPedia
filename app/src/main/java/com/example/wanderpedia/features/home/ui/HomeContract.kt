@@ -16,10 +16,13 @@ class HomeContract {
         val newWonders: WonderList = WonderList(Category.NewWonders, emptyList()),
     ) : ViewState
 
-    sealed class Event : ViewEvent
+    sealed class Event : ViewEvent {
+        class OnItemClick(val id: String) : Event()
+    }
 
     sealed class Effect : ViewEffect {
         class ShowErrorToast(val message: String) : Effect()
+        class NavigateToDetail(val id: String) : Effect()
     }
 }
 
