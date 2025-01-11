@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
+import com.example.wanderpedia.features.discover.ui.navigation.discoverNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
 
 
@@ -30,8 +31,8 @@ fun AppNavHost(
         homeNavigation {
             navController.navigate(AppDestinations.Detail(it))
         }
-        composable<AppDestinations.Discover> {
-            Text("Discover")
+        discoverNavigation {
+            navController.navigate(AppDestinations.Detail(it))
         }
         composable<AppDestinations.Favorite> {
             Text("Favorite")
