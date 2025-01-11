@@ -34,8 +34,6 @@ fun HomeScreen(
         ancientWonders = state.ancientWonders,
         modernWonders = state.modernWonders,
         newWonders = state.newWonders,
-        civ5Wonders = state.civ5Wonders,
-        civ6Wonders = state.civ6Wonders,
         modifier = modifier,
         onItemClick = navigateToDetail
     )

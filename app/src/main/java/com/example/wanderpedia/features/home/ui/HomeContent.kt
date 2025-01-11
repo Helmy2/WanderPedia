@@ -1,34 +1,33 @@
 package com.example.wanderpedia.features.home.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.R
 import com.example.wanderpedia.core.ui.component.DefaultAsyncImage
+import com.example.wanderpedia.core.ui.component.DefaultCircleButton
 import com.example.wanderpedia.core.ui.component.WonderCarousel
-import com.example.wanderpedia.core.ui.component.WonderListRowField
+import com.example.wanderpedia.core.ui.component.WonderRow
 
 @Composable
 fun HomeContent(
@@ -36,8 +35,6 @@ fun HomeContent(
     ancientWonders: WonderList,
     modernWonders: WonderList,
     newWonders: WonderList,
-    civ5Wonders: WonderList,
-    civ6Wonders: WonderList,
     modifier: Modifier = Modifier,
     onItemClick: (id: String) -> Unit,
 ) {
@@ -59,27 +56,28 @@ fun HomeContent(
             )
             WonderCarousel(
                 wonderList = ancientWonders.wonders,
-                onItemClick = onItemClick
+                onItemClick = { onItemClick(it.id) },
+                contentPadding = PaddingValues(horizontal = 50.dp),
+                modifier = Modifier.height(200.dp),
+                itemModifier = Modifier.width(300.dp),
             )
-            WonderListRowField(
+            WonderRow(
                 title = modernWonders.name,
                 wonderList = modernWonders.wonders,
-                onItemClick = onItemClick
+                onItemClick = { onItemClick(it.id) },
+                modifier = Modifier.height(350.dp),
+                itemModifier = Modifier
+                    .width(200.dp)
+                    .padding(horizontal = 8.dp)
             )
-            WonderListRowField(
+            WonderRow(
                 title = newWonders.name,
                 wonderList = newWonders.wonders,
-                onItemClick = onItemClick
-            )
-            WonderListRowField(
-                title = newWonders.name,
-                wonderList = civ5Wonders.wonders,
-                onItemClick = onItemClick
-            )
-            WonderListRowField(
-                title = civ6Wonders.name,
-                wonderList = civ6Wonders.wonders,
-                onItemClick = onItemClick
+                onItemClick = { onItemClick(it.id) },
+                modifier = Modifier.height(350.dp),
+                itemModifier = Modifier
+                    .width(200.dp)
+                    .padding(horizontal = 8.dp)
             )
         }
     }
@@ -89,35 +87,32 @@ fun HomeContent(
 fun ProfileField(
     modifier: Modifier = Modifier,
     imageUrl: String,
-    minIconSize: Dp = 40.dp,
-    profileColorBackground: Color = MaterialTheme.colorScheme.primaryContainer,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    iconSize: Dp = 48.dp,
 ) {
     Row(
         modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        DefaultAsyncImage(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(profileColorBackground)
-                .padding(8.dp)
-                .defaultMinSize(minIconSize, minIconSize),
-            contentDescription = "profile",
-            imageUrl = imageUrl,
-            error = { Image(painterResource(R.drawable.profile), "profile") },
-        )
-        Icon(
-            Icons.Outlined.Notifications,
-            contentDescription = "Notifications",
-            Modifier
-                .clip(CircleShape)
-                .background(containerColor)
-                .padding(8.dp)
-                .defaultMinSize(minIconSize, minIconSize),
-            tint = contentColor
-        )
+        DefaultCircleButton(
+            onClick = { },
+            modifier = Modifier.size(iconSize)
+        ) {
+            DefaultAsyncImage(
+                contentDescription = "profile",
+                imageUrl = imageUrl,
+                error = { Image(painterResource(R.drawable.profile), "profile") },
+            )
+        }
+
+        DefaultCircleButton(
+            onClick = { },
+            modifier = Modifier.size(iconSize)
+        ) {
+            Icon(
+                Icons.Outlined.Notifications,
+                contentDescription = "Notifications",
+            )
+        }
     }
 }

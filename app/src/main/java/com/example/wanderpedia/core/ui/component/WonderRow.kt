@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.material.icons.outlined.Place
@@ -24,17 +23,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.domain.model.Wonder
 
 
 @Composable
-fun WonderListRowField(
+fun WonderRow(
     title: String,
-    onItemClick: (id: String) -> Unit,
+    onItemClick: (Wonder) -> Unit,
     wonderList: List<Wonder>,
+    itemModifier: Modifier = Modifier,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -46,9 +45,7 @@ fun WonderListRowField(
         )
         LazyRow(
             contentPadding = PaddingValues(8.dp),
-            modifier = Modifier
-                .height(350.dp)
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxSize(),
         ) {
             items(if (wonderList.isEmpty()) 2 else 0) {
                 WonderCard(
@@ -57,8 +54,7 @@ fun WonderListRowField(
                     name = "",
                     location = "",
                     onClick = { },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
+                    modifier = itemModifier
                         .fillMaxHeight()
                 )
             }
@@ -67,9 +63,8 @@ fun WonderListRowField(
                     imageUrl = it.images.firstOrNull() ?: "",
                     name = it.name,
                     location = it.location,
-                    onClick = { onItemClick(it.id) },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
+                    onClick = { onItemClick(it) },
+                    modifier = itemModifier
                         .fillMaxHeight()
                 )
             }
@@ -90,29 +85,26 @@ fun WonderCard(
     Card(
         onClick = onClick,
         modifier = modifier
-            .aspectRatio(.6f),
     ) {
+        DefaultAsyncImage(
+            imageUrl = imageUrl,
+            modifier = Modifier
+                .fillMaxHeight(.7f)
+                .fillMaxWidth()
+                .placeholder(loading),
+            contentDescription = "Image of $name",
+            error = {
+                Icon(Icons.Outlined.ImageNotSupported, contentDescription = "Error")
+            },
+        )
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            DefaultAsyncImage(
-                imageUrl = imageUrl,
-                modifier = Modifier
-                    .fillMaxHeight(.7f)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .placeholder(loading),
-                contentDescription = "Image of $name",
-                error = {
-                    Icon(Icons.Outlined.ImageNotSupported, contentDescription = "Error")
-                }
-            )
             Text(
                 text = name,
                 style = MaterialTheme.typography.titleSmall,
-                maxLines = 2,
-                minLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,7 +117,9 @@ fun WonderCard(
                     Icons.Outlined.Place,
                     contentDescription = "Location",
                     tint = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.placeholder(loading)
+                    modifier = Modifier
+                        .size(MaterialTheme.typography.bodySmall.fontSize.value.dp)
+                        .placeholder(loading),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(

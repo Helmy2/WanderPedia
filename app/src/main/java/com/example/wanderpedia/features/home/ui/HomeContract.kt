@@ -14,8 +14,6 @@ class HomeContract {
         val ancientWonders: WonderList = WonderList(Category.AncientWonders, emptyList()),
         val modernWonders: WonderList = WonderList(Category.ModernWonders, emptyList()),
         val newWonders: WonderList = WonderList(Category.NewWonders, emptyList()),
-        val civ5Wonders: WonderList = WonderList(Category.Civ5Wonders, emptyList()),
-        val civ6Wonders: WonderList = WonderList(Category.Civ6Wonders, emptyList()),
     ) : ViewState
 
     sealed class Event : ViewEvent

@@ -39,8 +39,6 @@ class HomeViewModel @Inject constructor(
         geDataForCategory(Category.AncientWonders) { setState { copy(ancientWonders = it) } }
         geDataForCategory(Category.NewWonders) { setState { copy(newWonders = it) } }
         geDataForCategory(Category.ModernWonders) { setState { copy(modernWonders = it) } }
-        geDataForCategory(Category.Civ5Wonders) { setState { copy(civ5Wonders = it) } }
-        geDataForCategory(Category.Civ6Wonders) { setState { copy(civ6Wonders = it) } }
         setState { copy(loading = false) }
     }
 

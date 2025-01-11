@@ -1,14 +1,11 @@
 package com.example.wanderpedia.core.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -23,10 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.example.wanderpedia.core.domain.model.Wonder
@@ -38,18 +36,15 @@ import kotlin.math.absoluteValue
 @Composable
 fun WonderCarousel(
     wonderList: List<Wonder>,
-    onItemClick: (String) -> Unit,
-    height: Dp = 200.dp,
+    onItemClick: (Wonder) -> Unit,
     autoScrollDuration: Long = 2000L,
-    modifier: Modifier = Modifier
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
+    itemModifier: Modifier = Modifier,
 ) {
-    val pageCount = wonderList.size + 400
+    val pageCount = remember { wonderList.size + 400 }
 
-    val pagerState = rememberPagerState(
-        initialPage = pageCount / 2
-    ) {
-        pageCount
-    }
+    val pagerState = rememberPagerState(initialPage = pageCount / 2) { pageCount }
 
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
     if (isDragged.not()) {
@@ -68,24 +63,20 @@ fun WonderCarousel(
 
     HorizontalPager(
         state = pagerState,
-        contentPadding = PaddingValues(horizontal = height * .3f),
+        contentPadding = contentPadding,
         pageSpacing = 8.dp,
-        modifier = modifier
-            .height(height)
-            .fillMaxWidth(),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         beyondViewportPageCount = 1,
     ) {
         if (wonderList.isNotEmpty()) {
-            val item = wonderList.getOrNull(it % wonderList.size)
+            val item = wonderList[it % wonderList.size]
             CarouselItem(
-                name = item?.name ?: "",
-                imageUrl = item?.images?.firstOrNull() ?: "",
-                onClick = { onItemClick(item?.id ?: "") },
-                modifier = Modifier
+                name = item.name,
+                imageUrl = item.images.firstOrNull() ?: "",
+                onClick = { onItemClick(item) },
+                modifier = itemModifier
                     .carouselTransition(it, pagerState)
-                    .fillMaxHeight()
-                    .width(height * 1.5f)
             )
         } else {
             CarouselItem(
@@ -93,14 +84,11 @@ fun WonderCarousel(
                 name = "",
                 imageUrl = "",
                 onClick = {},
-                modifier = Modifier
+                modifier = itemModifier
                     .carouselTransition(it, pagerState)
-                    .fillMaxHeight()
-                    .width(height * 1.5f)
             )
         }
     }
-
 }
 
 fun Modifier.carouselTransition(page: Int, pagerState: PagerState) = graphicsLayer {
@@ -134,16 +122,29 @@ fun CarouselItem(
                     .fillMaxSize()
                     .placeholder(loading)
             )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.surface
+                            ),
+                        )
+                    )
+            )
             Text(
                 text = name,
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.BottomCenter),
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
