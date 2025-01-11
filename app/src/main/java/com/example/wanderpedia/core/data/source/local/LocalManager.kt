@@ -9,8 +9,7 @@ interface LocalManager {
     suspend fun getWonderById(id: String): CachedWonder?
     fun getWonderByCategory(category: String): Flow<List<CachedWonder>>
     fun getWondersBy(
-        nameQuery: String?,
-        locationQuery: String?,
+        textQuery: String?,
         timePeriodQuery: String?,
         categoryQuery: String?
     ): Flow<List<CachedWonder>>

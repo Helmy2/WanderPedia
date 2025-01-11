@@ -60,7 +60,6 @@ fun CachedWonder.toDomain(): Wonder {
     )
 }
 
-
 fun CachedTimePeriod?.toDomain(): TimePeriod {
     return when (this) {
         CachedTimePeriod.Prehistoric -> TimePeriod.Prehistoric

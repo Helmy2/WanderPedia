@@ -24,15 +24,16 @@ interface WonderDao {
     @Query(
         """
         SELECT * FROM cached_wonders 
-        WHERE (:nameQuery IS NULL OR name LIKE '%' || :nameQuery || '%')
-        AND (:locationQuery IS NULL OR location LIKE '%' || :locationQuery || '%')
+        WHERE (:textQuery IS NULL OR name LIKE '%' || :textQuery || '%' 
+        OR location LIKE '%' || :textQuery || '%' 
+        OR summary LIKE '%' || :textQuery || '%' 
+        OR buildYear LIKE '%' || :textQuery || '%')
         AND (:timePeriodQuery IS NULL OR timePeriod = :timePeriodQuery)
-        AND (:categoryQuery IS NULL OR :categoryQuery IN (categories))
+        AND (:categoryQuery IS NULL OR (categories) LIKE '%' || :categoryQuery || '%')
     """
     )
     fun getWondersBy(
-        nameQuery: String?,
-        locationQuery: String?,
+        textQuery: String?,
         timePeriodQuery: String?,
         categoryQuery: String?
     ): Flow<List<CachedWonder>>

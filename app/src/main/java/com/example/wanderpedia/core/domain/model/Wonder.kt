@@ -1,6 +1,7 @@
 package com.example.wanderpedia.core.domain.model
 
 import com.example.wanderpedia.core.data.source.local.model.CachedCategory
+import com.example.wanderpedia.core.data.source.local.model.CachedTimePeriod
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,7 +28,9 @@ sealed class Category(
     data object NewWonders : Category("New Wonders")
     data object Civ5Wonders : Category("Civilization VI")
     data object Civ6Wonders : Category("Civilization V")
-    data object Unknown : Category("All")
+    data object Unknown : Category("Unknown")
+    data object ALl : Category("All")
+
 }
 
 @Serializable
@@ -41,9 +44,10 @@ sealed class TimePeriod(
     data object EarlyModern : TimePeriod("EarlyModern")
     data object Modern : TimePeriod("Modern")
     data object Unknown : TimePeriod("Unknown")
+    data object All : TimePeriod("All")
 }
 
-fun Category.toCached(): CachedCategory {
+fun Category.toCached(): CachedCategory? {
     return when (this) {
         Category.AncientWonders -> CachedCategory.SevenWonders
         Category.ModernWonders -> CachedCategory.SevenModernWonders
@@ -51,5 +55,19 @@ fun Category.toCached(): CachedCategory {
         Category.Civ5Wonders -> CachedCategory.Civ5
         Category.Civ6Wonders -> CachedCategory.Civ6
         Category.Unknown -> CachedCategory.Unknown
+        Category.ALl -> null
+    }
+}
+
+fun TimePeriod.toCached(): CachedTimePeriod? {
+    return when (this) {
+        TimePeriod.Prehistoric -> CachedTimePeriod.Prehistoric
+        TimePeriod.Ancient -> CachedTimePeriod.Ancient
+        TimePeriod.Classical -> CachedTimePeriod.Classical
+        TimePeriod.PostClassical -> CachedTimePeriod.PostClassical
+        TimePeriod.EarlyModern -> CachedTimePeriod.EarlyModern
+        TimePeriod.Modern -> CachedTimePeriod.Modern
+        TimePeriod.Unknown -> CachedTimePeriod.Unknown
+        TimePeriod.All -> null
     }
 }

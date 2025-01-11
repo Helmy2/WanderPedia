@@ -12,9 +12,8 @@ interface WondersRepository {
     fun getAllWonders(): Flow<Resource<List<Wonder>>>
     fun getWondersByCategory(category: Category): Flow<Resource<List<Wonder>>>
     fun getWondersBy(
-        nameQuery: String?,
-        locationQuery: String?,
+        textQuery: String?,
         timePeriodQuery: CachedTimePeriod?,
-        category: CachedCategory?
+        categoryQuery: CachedCategory?
     ): Flow<Resource<List<Wonder>>>
 }

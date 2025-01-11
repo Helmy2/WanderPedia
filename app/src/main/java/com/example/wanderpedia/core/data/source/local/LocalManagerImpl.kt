@@ -25,14 +25,12 @@ class LocalManagerImpl @Inject constructor(
     }
 
     override fun getWondersBy(
-        nameQuery: String?,
-        locationQuery: String?,
+        textQuery: String?,
         timePeriodQuery: String?,
         categoryQuery: String?
     ): Flow<List<CachedWonder>> {
         return wonderDao.getWondersBy(
-            nameQuery = nameQuery,
-            locationQuery = locationQuery,
+            textQuery = textQuery,
             timePeriodQuery = timePeriodQuery,
             categoryQuery = categoryQuery
         )

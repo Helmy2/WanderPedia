@@ -71,30 +71,31 @@ class WondersRepositoryImpl @Inject constructor(
     }
 
     override fun getWondersByCategory(category: Category): Flow<Resource<List<Wonder>>> =
-        localManager.getWonderByCategory(category.toCached().name).map { cachedWonders ->
-            if (cachedWonders.isNotEmpty()) {
-                Resource.Success(cachedWonders.map { it.toDomain() })
-            } else {
-                // Fetch data from API
-                val result = apiService.getWondersByCategory(category.toCached().name)
-                val wonders = result.map { it.toCached() }
-                // Cache the data
-                localManager.insertWonders(wonders)
-                Resource.Success(wonders.map { it.toDomain() })
-            }
-        }.catch {
-            Resource.Error(it)
-        }
+        localManager.getWonderByCategory(category.toCached()?.name ?: Category.Unknown.name)
+            .map { cachedWonders ->
+                if (cachedWonders.isNotEmpty()) {
+                    Resource.Success(cachedWonders.map { it.toDomain() })
+                } else {
+                    // Fetch data from API
+                    val result = apiService.getWondersByCategory(
+                        category.toCached()?.name ?: Category.Unknown.name
+                    )
+                    val wonders = result.map { it.toCached() }
+                    // Cache the data
+                    localManager.insertWonders(wonders)
+                    Resource.Success(wonders.map { it.toDomain() })
+                }
+            }.catch {
+                Resource.Error(it)
+            }.flowOn(ioDispatcher)
 
 
     override fun getWondersBy(
-        nameQuery: String?,
-        locationQuery: String?,
+        textQuery: String?,
         timePeriodQuery: CachedTimePeriod?,
         categoryQuery: CachedCategory?
     ): Flow<Resource<List<Wonder>>> = localManager.getWondersBy(
-        nameQuery = nameQuery,
-        locationQuery = locationQuery,
+        textQuery = textQuery,
         timePeriodQuery = timePeriodQuery?.name,
         categoryQuery = categoryQuery?.name
     ).map { cachedWonders ->
