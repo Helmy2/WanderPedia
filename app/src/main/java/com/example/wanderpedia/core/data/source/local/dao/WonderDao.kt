@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WonderDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWonder(wonder: CachedWonder)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWonders(wonders: List<CachedWonder>)
 

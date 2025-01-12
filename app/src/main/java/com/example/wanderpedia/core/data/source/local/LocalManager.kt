@@ -4,6 +4,7 @@ import com.example.wanderpedia.core.data.source.local.model.CachedWonder
 import kotlinx.coroutines.flow.Flow
 
 interface LocalManager {
+    suspend fun insertWonder(wonders: CachedWonder)
     suspend fun insertWonders(wonders: List<CachedWonder>)
     fun getAllWonders(): Flow<List<CachedWonder>>
     suspend fun getWonderById(id: String): CachedWonder?

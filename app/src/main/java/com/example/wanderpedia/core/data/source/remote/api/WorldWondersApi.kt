@@ -13,5 +13,10 @@ interface WorldWondersApi {
     suspend fun getWondersByCategory(
         @Query("category") category: String,
     ): List<WonderResponse>
+
+    @GET("wonders/name/{name}")
+    suspend fun getWonderByName(
+        @Query("name") name: String,
+    ): WonderResponse
 }
 

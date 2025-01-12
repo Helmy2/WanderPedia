@@ -8,6 +8,10 @@ import javax.inject.Inject
 class LocalManagerImpl @Inject constructor(
     private val wonderDao: WonderDao
 ) : LocalManager {
+    override suspend fun insertWonder(wonder: CachedWonder) {
+        wonderDao.insertWonder(wonder)
+    }
+
     override suspend fun insertWonders(wonders: List<CachedWonder>) {
         wonderDao.insertWonders(wonders)
     }

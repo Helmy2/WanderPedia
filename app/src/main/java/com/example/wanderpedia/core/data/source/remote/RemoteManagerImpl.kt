@@ -14,4 +14,9 @@ class RemoteManagerImpl @Inject constructor(
     override suspend fun getWondersByCategory(category: String): List<WonderResponse> {
         return wondersApi.getWondersByCategory(category)
     }
+
+    override suspend fun getWonderByName(name: String): WonderResponse {
+        return wondersApi.getWonderByName(name)
+    }
+
 }

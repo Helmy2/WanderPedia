@@ -44,8 +44,6 @@ class WondersRepositoryImpl @Inject constructor(
         }.flowOn(ioDispatcher)
 
 
-    // The API service don't have a getWonderById method
-    // So we have to fetch all the wonders and filter the one we want
     override suspend fun getWonderById(id: String): Resource<Wonder> = withContext(ioDispatcher) {
         safeResource {
             // Check if data is cached
@@ -54,18 +52,13 @@ class WondersRepositoryImpl @Inject constructor(
                 cachedWonder.toDomain()
             } else {
                 // Fetch data from API
-                val result = apiService.getAllWonders()
-                val wonders = result.map { it.toCached() }
+                val result = apiService.getWonderByName(id)
+                val wonder = result.toCached()
 
                 // Cache the data
-                localManager.insertWonders(wonders)
+                localManager.insertWonder(wonder)
 
-                val wonder = wonders.firstOrNull { it.id == id }
-                if (wonder == null) {
-                    throw Exception("Wonder with id $id not found")
-                } else {
-                    wonder.toDomain()
-                }
+                wonder.toDomain()
             }
         }
     }
