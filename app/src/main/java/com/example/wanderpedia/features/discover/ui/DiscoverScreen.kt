@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -36,11 +35,10 @@ fun DiscoverScreen(
         wonders = state.wonders,
         loading = state.loading,
         filters = state.filters,
-        modifier = Modifier,
-        onItemClick = { viewModel.handleEvents(DiscoverContract.Event.OnItemClick(it)) },
         showFilterDialog = showFilterDialog,
-        onShowFilterDialogChange = { showFilterDialog = it },
+        onItemClick = { viewModel.handleEvents(DiscoverContract.Event.OnItemClick(it)) },
         onShowDialog = { showFilterDialog = true },
+        onShowFilterDialogChange = { showFilterDialog = it },
         onApplyFilters = {
             viewModel.handleEvents(DiscoverContract.Event.ApplyFilters(it))
             showFilterDialog = false

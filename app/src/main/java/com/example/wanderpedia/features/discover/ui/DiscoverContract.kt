@@ -29,22 +29,22 @@ class DiscoverContract {
         val text: String? = null,
         val timePeriod: TimePeriod = TimePeriod.All,
         val timePeriodList: List<TimePeriod> = listOf(
+            TimePeriod.All,
             TimePeriod.Prehistoric,
             TimePeriod.Ancient,
             TimePeriod.Classical,
             TimePeriod.PostClassical,
             TimePeriod.PostClassical,
             TimePeriod.Modern,
-            TimePeriod.All
         ),
         val category: Category = Category.ALl,
         val categoryList: List<Category> = listOf(
+            Category.ALl,
             Category.AncientWonders,
             Category.ModernWonders,
             Category.NewWonders,
             Category.Civ5Wonders,
             Category.Civ6Wonders,
-            Category.ALl
         )
     )
 }
