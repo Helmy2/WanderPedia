@@ -6,8 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
+import com.example.wanderpedia.features.detail.ui.navigatoin.detailNavigation
 import com.example.wanderpedia.features.discover.ui.navigation.discoverNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
 
@@ -19,7 +19,8 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
 ) {
     NavHost(
-        navController = navController, startDestination = stateDestinations,
+        navController = navController,
+        startDestination = stateDestinations,
         modifier = modifier
     ) {
         authNavigation(
@@ -40,9 +41,8 @@ fun AppNavHost(
         composable<AppDestinations.Profile> {
             Text("Profile")
         }
-        composable<AppDestinations.Detail> {
-            val args = it.toRoute<AppDestinations.Detail>()
-            Text(args.toString())
-        }
+        detailNavigation(
+            navigateBack = { navController.popBackStack() }
+        )
     }
 }
