@@ -23,11 +23,7 @@ class HomeViewModel @Inject constructor(
 ) {
     override fun handleEvents(event: HomeContract.Event) {
         when (event) {
-            is HomeContract.Event.OnItemClick -> setEffect {
-                HomeContract.Effect.NavigateToDetail(
-                    event.id
-                )
-            }
+            is HomeContract.Event.OnItemClick -> navigateToDetail(event.id)
         }
     }
 
@@ -57,5 +53,9 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun navigateToDetail(id: String) {
+        setEffect { HomeContract.Effect.NavigateToDetail(id) }
     }
 }

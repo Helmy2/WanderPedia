@@ -17,12 +17,12 @@ class HomeContract {
     ) : ViewState
 
     sealed class Event : ViewEvent {
-        class OnItemClick(val id: String) : Event()
+        data class OnItemClick(val id: String) : Event()
     }
 
     sealed class Effect : ViewEffect {
-        class ShowErrorToast(val message: String) : Effect()
-        class NavigateToDetail(val id: String) : Effect()
+        data class ShowErrorToast(val message: String) : Effect()
+        data class NavigateToDetail(val id: String) : Effect()
     }
 }
 

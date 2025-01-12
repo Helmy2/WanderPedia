@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wanderpedia.core.ui.component.DefaultSnackbarHost
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -27,7 +28,7 @@ fun SignInScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel.effect) {
-        viewModel.effect.collect {
+        viewModel.effect.collectLatest {
             when (it) {
                 SignInContract.Effect.NavigateToForgotPassword -> onNavigateToRestPassword()
                 SignInContract.Effect.NavigateToSignUp -> onNavigateToSignUp()

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
@@ -19,7 +20,7 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel.effect) {
-        viewModel.effect.collect {
+        viewModel.effect.collectLatest {
             when (it) {
                 is HomeContract.Effect.ShowErrorToast -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -39,10 +40,6 @@ fun HomeScreen(
         modernWonders = state.modernWonders,
         newWonders = state.newWonders,
         modifier = modifier,
-        onItemClick = {
-            viewModel.handleEvents(
-                HomeContract.Event.OnItemClick(it)
-            )
-        }
+        onItemClick = { viewModel.handleEvents(HomeContract.Event.OnItemClick(it)) }
     )
 }

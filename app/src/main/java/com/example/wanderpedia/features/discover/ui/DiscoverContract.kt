@@ -17,7 +17,7 @@ class DiscoverContract {
     sealed class Event : ViewEvent {
         data class ApplyFilters(val filters: Filters) : Event()
         data class OnItemClick(val id: String) : Event()
-        object LoadWonders : Event()
+        data object LoadWonders : Event()
     }
 
     sealed class Effect : ViewEffect {
