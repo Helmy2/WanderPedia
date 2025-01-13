@@ -27,9 +27,10 @@ class DiscoverViewModel @Inject constructor(
 
     override fun handleEvents(event: DiscoverContract.Event) {
         when (event) {
-            is DiscoverContract.Event.ApplyFilters -> applyFilters(event.filters)
-            is DiscoverContract.Event.LoadWonders -> loadWonders()
+            is DiscoverContract.Event.UpdateFilter -> applyFilters(event.filters)
             is DiscoverContract.Event.OnItemClick -> navigateToDetail(event.id)
+            is DiscoverContract.Event.UpdateShowFilterDialog -> setState { copy(showFilterDialog = event.show) }
+            DiscoverContract.Event.RestFilters -> applyFilters(DiscoverContract.Filter())
         }
     }
 
@@ -50,9 +51,9 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    private fun applyFilters(filters: DiscoverContract.Filters) {
+    private fun applyFilters(filters: DiscoverContract.Filter) {
         viewModelScope.launch(ioDispatcher) {
-            setState { copy(loading = true, filters = filters) }
+            setState { copy(loading = true, filter = filters) }
             delay(1000)
             getWondersByUseCase(
                 textQuery = filters.text,

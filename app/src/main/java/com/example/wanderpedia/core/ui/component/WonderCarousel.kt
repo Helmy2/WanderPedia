@@ -159,11 +159,7 @@ fun CarouselItem(
                     text = name,
                     modifier = Modifier
                         .padding(8.dp)
-                        .align(Alignment.BottomCenter)
-                        .sharedElement(
-                            transitionScope.rememberSharedContentState(key = "$id-name"),
-                            animatedVisibilityScope = contentScope
-                        ),
+                        .align(Alignment.BottomCenter),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium,

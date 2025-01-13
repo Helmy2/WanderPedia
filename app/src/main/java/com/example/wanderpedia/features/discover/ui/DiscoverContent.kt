@@ -22,7 +22,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.ui.component.DefaultButton
 import com.example.wanderpedia.core.ui.component.DefaultCircleButton
 import com.example.wanderpedia.core.ui.component.DefaultDropdown
@@ -32,45 +31,45 @@ import com.example.wanderpedia.core.ui.component.WonderGrid
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DiscoverContent(
-    wonders: List<Wonder>,
-    loading: Boolean,
-    filters: DiscoverContract.Filters,
+    state: DiscoverContract.State,
     modifier: Modifier = Modifier,
-    showFilterDialog: Boolean,
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
-    onItemClick: (id: String) -> Unit,
-    onShowDialog: () -> Unit,
-    onShowFilterDialogChange: (Boolean) -> Unit,
-    onApplyFilters: (DiscoverContract.Filters) -> Unit,
+    handleEvents: (DiscoverContract.Event) -> Unit
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
 
     Box(modifier) {
         WonderGrid(
-            wonders = wonders,
-            loading = loading,
-            onItemClick = onItemClick,
+            wonders = state.wonders,
+            loading = state.loading,
+            onItemClick = { handleEvents(DiscoverContract.Event.OnItemClick(it)) },
             transitionScope = transitionScope,
             contentScope = contentScope,
             header = {
                 Column {
                     DiscoverHeader(
-                        text = filters.text,
-                        onTextChange = { onApplyFilters(filters.copy(text = it)) },
-                        onShowDialog = onShowDialog,
+                        text = state.filter.text,
+                        onTextChange = {
+                            handleEvents(
+                                DiscoverContract.Event.UpdateFilter(
+                                    state.filter.copy(text = it)
+                                )
+                            )
+                        },
+                        onShowDialog = { DiscoverContract.Event.UpdateShowFilterDialog(true) },
                         modifier = Modifier
                             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                             .fillMaxWidth()
                     )
-                    AnimatedVisibility(wonders.isEmpty()) {
+                    AnimatedVisibility(state.wonders.isEmpty() && !state.loading) {
                         Column(
                             Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text("No wonders found")
                             DefaultButton(onClick = {
-                                onApplyFilters(DiscoverContract.Filters())
+                                handleEvents(DiscoverContract.Event.RestFilters)
                                 keyboard?.hide()
                             }) {
                                 Text("Rest filters")
@@ -80,11 +79,14 @@ fun DiscoverContent(
                 }
             },
         )
-        AnimatedVisibility(showFilterDialog) {
+        AnimatedVisibility(state.showFilterDialog) {
             FilterDialog(
-                filters = filters,
-                onDismiss = { onShowFilterDialogChange(false) },
-                onApplyFilters = onApplyFilters,
+                filters = state.filter,
+                onDismiss = { handleEvents(DiscoverContract.Event.UpdateShowFilterDialog(false)) },
+                onApplyFilters = {
+                    handleEvents(DiscoverContract.Event.UpdateShowFilterDialog(false))
+                    handleEvents(DiscoverContract.Event.UpdateFilter(it))
+                },
             )
         }
     }
@@ -122,9 +124,9 @@ fun DiscoverHeader(
 
 @Composable
 fun FilterDialog(
-    filters: DiscoverContract.Filters,
+    filters: DiscoverContract.Filter,
     onDismiss: () -> Unit,
-    onApplyFilters: (DiscoverContract.Filters) -> Unit
+    onApplyFilters: (DiscoverContract.Filter) -> Unit
 ) {
     var selectedTimePeriod by remember { mutableStateOf(filters.timePeriod) }
     var selectedCategory by remember { mutableStateOf(filters.category) }

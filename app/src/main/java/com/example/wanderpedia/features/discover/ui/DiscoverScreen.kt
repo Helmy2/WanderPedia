@@ -7,9 +7,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
@@ -23,14 +21,12 @@ fun DiscoverScreen(
     navigateToDetail: (id: String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var showFilterDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(viewModel.effect) {
+    LaunchedEffect(viewModel) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 is DiscoverContract.Effect.ShowErrorToast -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
                     snackbarHostState.showSnackbar(message = effect.message)
                 }
 
@@ -42,19 +38,9 @@ fun DiscoverScreen(
     }
 
     DiscoverContent(
-        wonders = state.wonders,
-        loading = state.loading,
-        filters = state.filters,
-        showFilterDialog = showFilterDialog,
+        state = state,
         transitionScope = transitionScope,
         contentScope = contentScope,
-        onItemClick = { viewModel.handleEvents(DiscoverContract.Event.OnItemClick(it)) },
-        onShowDialog = { showFilterDialog = true },
-        onShowFilterDialogChange = { showFilterDialog = it },
-        onApplyFilters = {
-            viewModel.handleEvents(DiscoverContract.Event.ApplyFilters(it))
-            showFilterDialog = false
-        },
+        handleEvents = viewModel::handleEvents
     )
-
 }

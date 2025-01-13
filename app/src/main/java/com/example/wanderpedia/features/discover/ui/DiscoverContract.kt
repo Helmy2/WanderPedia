@@ -10,14 +10,16 @@ import com.example.wanderpedia.core.ui.ViewState
 class DiscoverContract {
     data class State(
         val loading: Boolean = true,
+        val showFilterDialog: Boolean = false,
         val wonders: List<Wonder> = emptyList(),
-        val filters: Filters = Filters()
+        val filter: Filter = Filter(),
     ) : ViewState
 
     sealed class Event : ViewEvent {
-        data class ApplyFilters(val filters: Filters) : Event()
+        data class UpdateFilter(val filters: Filter) : Event()
         data class OnItemClick(val id: String) : Event()
-        data object LoadWonders : Event()
+        data class UpdateShowFilterDialog(val show: Boolean) : Event()
+        data object RestFilters : Event()
     }
 
     sealed class Effect : ViewEffect {
@@ -25,7 +27,7 @@ class DiscoverContract {
         data class NavigateToDetail(val id: String) : Effect()
     }
 
-    data class Filters(
+    data class Filter(
         val text: String? = null,
         val timePeriod: TimePeriod = TimePeriod.All,
         val timePeriodList: List<TimePeriod> = listOf(
