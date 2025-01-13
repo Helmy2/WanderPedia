@@ -1,5 +1,8 @@
 package com.example.wanderpedia.features.discover.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,8 +14,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DiscoverScreen(
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
     viewModel: DiscoverViewModel = hiltViewModel(),
     navigateToDetail: (id: String) -> Unit
 ) {
@@ -40,6 +46,8 @@ fun DiscoverScreen(
         loading = state.loading,
         filters = state.filters,
         showFilterDialog = showFilterDialog,
+        transitionScope = transitionScope,
+        contentScope = contentScope,
         onItemClick = { viewModel.handleEvents(DiscoverContract.Event.OnItemClick(it)) },
         onShowDialog = { showFilterDialog = true },
         onShowFilterDialogChange = { showFilterDialog = it },

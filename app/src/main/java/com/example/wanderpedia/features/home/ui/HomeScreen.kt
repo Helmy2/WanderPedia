@@ -1,19 +1,23 @@
 package com.example.wanderpedia.features.home.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
     navigateToDetail: (id: String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -39,7 +43,8 @@ fun HomeScreen(
         ancientWonders = state.ancientWonders,
         modernWonders = state.modernWonders,
         newWonders = state.newWonders,
-        modifier = modifier,
+        transitionScope = transitionScope,
+        contentScope = contentScope,
         onItemClick = { viewModel.handleEvents(HomeContract.Event.OnItemClick(it)) }
     )
 }

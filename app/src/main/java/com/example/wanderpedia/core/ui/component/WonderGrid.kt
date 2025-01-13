@@ -1,5 +1,8 @@
 package com.example.wanderpedia.core.ui.component
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
@@ -13,10 +16,13 @@ import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.domain.model.Wonder
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WonderGrid(
     loading: Boolean,
     wonders: List<Wonder>,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
     header: @Composable () -> Unit = {},
     onItemClick: (id: String) -> Unit,
     modifier: Modifier = Modifier
@@ -35,19 +41,25 @@ fun WonderGrid(
         }
         items(if (loading) 6 else 0) { wonder ->
             WonderCard(
+                id = "",
                 name = "",
                 location = "",
                 imageUrl = "",
                 loading = true,
                 onClick = { },
+                transitionScope = transitionScope,
+                contentScope = contentScope,
                 modifier = Modifier.height(300.dp)
             )
         }
         items(wonders) { wonder ->
             WonderCard(
+                id = wonder.id,
                 name = wonder.name,
                 location = wonder.location,
                 imageUrl = wonder.images.firstOrNull() ?: "",
+                transitionScope = transitionScope,
+                contentScope = contentScope,
                 onClick = { onItemClick(wonder.id) },
             )
         }

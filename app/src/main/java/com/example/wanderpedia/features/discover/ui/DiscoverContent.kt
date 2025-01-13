@@ -1,6 +1,9 @@
 package com.example.wanderpedia.features.discover.ui
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +29,7 @@ import com.example.wanderpedia.core.ui.component.DefaultDropdown
 import com.example.wanderpedia.core.ui.component.DefaultTextField
 import com.example.wanderpedia.core.ui.component.WonderGrid
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DiscoverContent(
     wonders: List<Wonder>,
@@ -33,6 +37,8 @@ fun DiscoverContent(
     filters: DiscoverContract.Filters,
     modifier: Modifier = Modifier,
     showFilterDialog: Boolean,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
     onItemClick: (id: String) -> Unit,
     onShowDialog: () -> Unit,
     onShowFilterDialogChange: (Boolean) -> Unit,
@@ -42,7 +48,11 @@ fun DiscoverContent(
 
     Box(modifier) {
         WonderGrid(
-            wonders = wonders, loading = loading, onItemClick = onItemClick,
+            wonders = wonders,
+            loading = loading,
+            onItemClick = onItemClick,
+            transitionScope = transitionScope,
+            contentScope = contentScope,
             header = {
                 Column {
                     DiscoverHeader(

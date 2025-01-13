@@ -1,5 +1,8 @@
 package com.example.wanderpedia.features.home.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +32,11 @@ import com.example.wanderpedia.core.ui.component.DefaultCircleButton
 import com.example.wanderpedia.core.ui.component.WonderCarousel
 import com.example.wanderpedia.core.ui.component.WonderRow
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeContent(
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
     userImageUrl: String,
     ancientWonders: WonderList,
     modernWonders: WonderList,
@@ -68,7 +74,9 @@ fun HomeContent(
                 modifier = Modifier.height(350.dp),
                 itemModifier = Modifier
                     .width(200.dp)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp),
+                transitionScope = transitionScope,
+                contentScope = contentScope,
             )
             WonderRow(
                 title = newWonders.name,
@@ -77,7 +85,9 @@ fun HomeContent(
                 modifier = Modifier.height(350.dp),
                 itemModifier = Modifier
                     .width(200.dp)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp),
+                transitionScope = transitionScope,
+                contentScope = contentScope,
             )
         }
     }

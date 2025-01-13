@@ -1,5 +1,8 @@
 package com.example.wanderpedia.core.ui.component
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,14 +18,18 @@ import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.domain.model.Wonder
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WonderRow(
     title: String,
     onItemClick: (Wonder) -> Unit,
     wonderList: List<Wonder>,
     itemModifier: Modifier = Modifier,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
 ) {
+
     Column(modifier) {
         Text(
             title,
@@ -36,24 +43,36 @@ fun WonderRow(
         ) {
             items(if (wonderList.isEmpty()) 2 else 0) {
                 WonderCard(
+                    id = "",
                     loading = true,
                     imageUrl = "",
                     name = "",
                     location = "",
                     onClick = { },
+                    transitionScope = transitionScope,
+                    contentScope = contentScope,
                     modifier = itemModifier
                         .fillMaxHeight()
                 )
             }
             items(wonderList) {
-                WonderCard(
-                    imageUrl = it.images.firstOrNull() ?: "",
-                    name = it.name,
-                    location = it.location,
-                    onClick = { onItemClick(it) },
-                    modifier = itemModifier
-                        .fillMaxHeight()
-                )
+                with(transitionScope) {
+                    WonderCard(
+                        id = it.id,
+                        imageUrl = it.images.firstOrNull() ?: "",
+                        name = it.name,
+                        location = it.location,
+                        transitionScope = transitionScope,
+                        contentScope = contentScope,
+                        onClick = { onItemClick(it) },
+                        modifier = itemModifier
+                            .fillMaxHeight()
+                            .sharedElement(
+                                transitionScope.rememberSharedContentState(key = it.id),
+                                animatedVisibilityScope = contentScope
+                            )
+                    )
+                }
             }
         }
     }
