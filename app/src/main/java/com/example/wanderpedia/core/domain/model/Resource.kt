@@ -27,6 +27,16 @@ inline fun <T, R> T.safeResource(block: T.() -> R): Resource<R> {
     }
 }
 
+fun <T> Resource<T>.handleResource(
+    onSuccess: (T) -> Unit,
+    onError: (String) -> Unit
+) {
+    when (this) {
+        is Resource.Error -> onError(exception?.localizedMessage ?: "")
+        is Resource.Success -> onSuccess(data)
+    }
+}
+
 
 
 

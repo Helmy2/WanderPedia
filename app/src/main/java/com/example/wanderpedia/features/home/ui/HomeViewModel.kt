@@ -3,7 +3,8 @@ package com.example.wanderpedia.features.home.ui
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
-import com.example.wanderpedia.core.domain.model.Resource
+import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
+import com.example.wanderpedia.core.domain.model.handleResource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.home.domain.usecase.GetCurrentUserFlowUseCase
 import com.example.wanderpedia.features.home.domain.usecase.GetWondersByCategoryUseCase
@@ -15,46 +16,85 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val getWondersByCategoryUseCase: GetWondersByCategoryUseCase,
-    val getCurrentUserFlowUseCase: GetCurrentUserFlowUseCase,
+    private val getWondersByCategoryUseCase: GetWondersByCategoryUseCase,
+    private val getCurrentUserFlowUseCase: GetCurrentUserFlowUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>(
     HomeContract.State()
 ) {
-    override fun handleEvents(event: HomeContract.Event) {
-        when (event) {
-            is HomeContract.Event.OnItemClick -> navigateToDetail(event.id)
-        }
-    }
 
     init {
-        viewModelScope.launch(ioDispatcher) {
-            getCurrentUserFlowUseCase().collect {
-                when (it) {
-                    is Resource.Error -> setEffect { HomeContract.Effect.ShowErrorToast(it.exception?.localizedMessage.orEmpty()) }
-                    is Resource.Success -> setState { copy(user = user) }
-                }
-            }
-        }
+        fetchInitialData()
+        observeCurrentUser()
+    }
 
+    override fun handleEvents(event: HomeContract.Event) {
+        when (event) {
+            is HomeContract.Event.OnItemClick -> navigateToDetail(event.wonder)
+        }
+    }
+
+    private fun fetchInitialData() {
         setState { copy(loading = true) }
-        geDataForCategory(Category.AncientWonders) { setState { copy(ancientWonders = it) } }
-        geDataForCategory(Category.ModernWonders) { setState { copy(modernWonders = it) } }
-        setState { copy(loading = false) }
+
+        viewModelScope.launch(ioDispatcher) {
+            val ancientWondersJob = launch {
+                fetchDataForCategory(Category.AncientWonders) {
+                    setState { copy(ancientWonders = it) }
+                }
+            }
+            val modernWondersJob = launch {
+                fetchDataForCategory(Category.ModernWonders) {
+                    setState { copy(modernWonders = it) }
+                }
+            }
+
+            // Wait for both jobs to complete before setting loading to false
+            ancientWondersJob.join()
+            modernWondersJob.join()
+            setState { copy(loading = false) }
+        }
     }
 
-    private fun geDataForCategory(category: Category, onSuccess: (WonderList) -> Unit) {
+    private fun observeCurrentUser() {
         viewModelScope.launch(ioDispatcher) {
-            getWondersByCategoryUseCase(category).collectLatest {
-                when (it) {
-                    is Resource.Error -> setEffect { HomeContract.Effect.ShowErrorToast(it.exception?.localizedMessage.orEmpty()) }
-                    is Resource.Success -> onSuccess(WonderList(category, it.data))
-                }
+            getCurrentUserFlowUseCase().collect { resource ->
+                resource.handleResource(
+                    onSuccess = { user -> setState { copy(user = user) } },
+                    onError = { errorMessage ->
+                        setEffect {
+                            HomeContract.Effect.ShowErrorToast(
+                                errorMessage
+                            )
+                        }
+                    }
+                )
             }
         }
     }
 
-    private fun navigateToDetail(id: String) {
-        setEffect { HomeContract.Effect.NavigateToDetail(id) }
+    private fun fetchDataForCategory(
+        category: Category,
+        updateStateWithData: (WonderList) -> Unit
+    ) {
+        viewModelScope.launch(ioDispatcher) {
+            getWondersByCategoryUseCase(category).collectLatest { resource ->
+                resource.handleResource(
+                    onSuccess = { data -> updateStateWithData(WonderList(category, data)) },
+                    onError = { errorMessage ->
+                        setEffect {
+                            HomeContract.Effect.ShowErrorToast(
+                                errorMessage
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    private fun navigateToDetail(wonder: WonderWithDigitalis) {
+        setEffect { HomeContract.Effect.NavigateToDetail(wonder) }
     }
 }
+

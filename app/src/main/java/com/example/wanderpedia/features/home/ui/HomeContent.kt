@@ -34,13 +34,11 @@ import com.example.wanderpedia.core.ui.component.WonderRow
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeContent(
+    state: HomeContract.State,
+    handleEvents: (HomeContract.Event) -> Unit,
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
-    userImageUrl: String,
-    ancientWonders: WonderList,
-    modernWonders: WonderList,
     modifier: Modifier = Modifier,
-    onItemClick: (id: String) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -54,14 +52,14 @@ fun HomeContent(
                 .fillMaxSize()
         ) {
             ProfileBar(
-                imageUrl = userImageUrl,
+                imageUrl = state.user.imageUrl,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 transitionScope = transitionScope,
                 contentScope = contentScope,
             )
             WonderCarousel(
-                wonderList = ancientWonders.wonders,
-                onItemClick = { onItemClick(it.id) },
+                wonderList = state.ancientWonders.wonders,
+                onItemClick = { handleEvents(HomeContract.Event.OnItemClick(it)) },
                 contentPadding = PaddingValues(horizontal = 50.dp),
                 modifier = Modifier.height(200.dp),
                 itemModifier = Modifier.width(300.dp),
@@ -69,9 +67,9 @@ fun HomeContent(
                 contentScope = contentScope,
             )
             WonderRow(
-                title = modernWonders.name,
-                wonderList = modernWonders.wonders,
-                onItemClick = { onItemClick(it.id) },
+                title = state.modernWonders.category.name,
+                wonderList = state.modernWonders.wonders,
+                onItemClick = { handleEvents(HomeContract.Event.OnItemClick(it)) },
                 modifier = Modifier.height(350.dp),
                 itemModifier = Modifier
                     .width(200.dp)

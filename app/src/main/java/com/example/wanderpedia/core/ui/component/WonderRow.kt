@@ -15,21 +15,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wanderpedia.core.domain.model.Wonder
+import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WonderRow(
     title: String,
-    onItemClick: (Wonder) -> Unit,
-    wonderList: List<Wonder>,
+    onItemClick: (WonderWithDigitalis) -> Unit,
+    wonderList: List<WonderWithDigitalis>,
     itemModifier: Modifier = Modifier,
     modifier: Modifier = Modifier,
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
 ) {
-
     Column(modifier) {
         Text(
             title,
@@ -56,23 +55,17 @@ fun WonderRow(
                 )
             }
             items(wonderList, key = { it.id }) {
-                with(transitionScope) {
-                    WonderCard(
-                        id = it.id,
-                        imageUrl = it.images.firstOrNull() ?: "",
-                        name = it.name,
-                        location = it.location,
-                        transitionScope = transitionScope,
-                        contentScope = contentScope,
-                        onClick = { onItemClick(it) },
-                        modifier = itemModifier
-                            .fillMaxHeight()
-                            .sharedElement(
-                                transitionScope.rememberSharedContentState(key = it.id),
-                                animatedVisibilityScope = contentScope
-                            )
-                    )
-                }
+                WonderCard(
+                    id = it.id,
+                    imageUrl = it.images.firstOrNull() ?: "",
+                    name = it.name,
+                    location = it.location,
+                    transitionScope = transitionScope,
+                    contentScope = contentScope,
+                    onClick = { onItemClick(it) },
+                    modifier = itemModifier
+                        .fillMaxHeight()
+                )
             }
         }
     }

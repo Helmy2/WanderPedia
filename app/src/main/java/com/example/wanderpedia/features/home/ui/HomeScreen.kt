@@ -23,27 +23,24 @@ fun HomeScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(viewModel.effect) {
+    LaunchedEffect(viewModel) {
         viewModel.effect.collectLatest {
             when (it) {
                 is HomeContract.Effect.ShowErrorToast -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
                     snackbarHostState.showSnackbar(message = it.message)
                 }
 
                 is HomeContract.Effect.NavigateToDetail -> {
-                    navigateToDetail(it.id)
+                    navigateToDetail(it.wonder.id)
                 }
             }
         }
     }
 
     HomeContent(
-        userImageUrl = state.user.imageUrl,
-        ancientWonders = state.ancientWonders,
-        modernWonders = state.modernWonders,
+        state = state,
         transitionScope = transitionScope,
         contentScope = contentScope,
-        onItemClick = { viewModel.handleEvents(HomeContract.Event.OnItemClick(it)) }
+        handleEvents = viewModel::handleEvents
     )
 }
