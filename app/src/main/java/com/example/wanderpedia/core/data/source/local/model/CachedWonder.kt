@@ -7,6 +7,7 @@ import com.example.wanderpedia.core.data.source.local.conveter.StringListConvert
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.TimePeriod
 import com.example.wanderpedia.core.domain.model.Wonder
+import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
 
 @Entity(tableName = "cached_wonders")
 data class CachedWonder(
@@ -44,23 +45,32 @@ enum class CachedCategory {
     Unknown
 }
 
-fun CachedWonder.toDomain(): Wonder {
-    return Wonder(
+fun CachedWonder.toDomainWonderWithDigitalis(): WonderWithDigitalis {
+    return WonderWithDigitalis(
         id = id,
         buildYear = buildYear ?: 0,
         location = location ?: "Unknown",
         name = name ?: "Unknown",
         summary = summary ?: "Unknown",
-        timePeriod = timePeriod.toDomain(),
+        timePeriod = timePeriod.toDomainWonder(),
         mapLink = mapLink ?: "Unknown",
         tripAdvisorLink = tripAdvisorLink ?: "Unknown",
         wikiLink = wikiLink ?: "Unknown",
         images = images,
-        categories = categories.map { it.toDomain() }
+        categories = categories.map { it.toDomainWonder() }
     )
 }
 
-fun CachedTimePeriod?.toDomain(): TimePeriod {
+fun CachedWonder.toDomainWonder(): Wonder {
+    return Wonder(
+        id = id,
+        location = location ?: "Unknown",
+        name = name ?: "Unknown",
+        imageUrl = images.firstOrNull() ?: "",
+    )
+}
+
+fun CachedTimePeriod?.toDomainWonder(): TimePeriod {
     return when (this) {
         CachedTimePeriod.Prehistoric -> TimePeriod.Prehistoric
         CachedTimePeriod.Ancient -> TimePeriod.Ancient
@@ -72,7 +82,7 @@ fun CachedTimePeriod?.toDomain(): TimePeriod {
     }
 }
 
-fun CachedCategory?.toDomain(): Category {
+fun CachedCategory?.toDomainWonder(): Category {
     return when (this) {
         CachedCategory.SevenWonders -> Category.AncientWonders
         CachedCategory.SevenModernWonders -> Category.ModernWonders

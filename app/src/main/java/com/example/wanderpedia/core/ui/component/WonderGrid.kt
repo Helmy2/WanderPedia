@@ -57,7 +57,7 @@ fun WonderGrid(
                 id = wonder.id,
                 name = wonder.name,
                 location = wonder.location,
-                imageUrl = wonder.images.firstOrNull() ?: "",
+                imageUrl = wonder.imageUrl,
                 transitionScope = transitionScope,
                 contentScope = contentScope,
                 onClick = { onItemClick(wonder.id) },

@@ -4,10 +4,12 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,8 +48,7 @@ fun WonderCard(
             onClick = onClick,
             modifier = modifier,
         ) {
-            DefaultAsyncImage(
-                imageUrl = imageUrl,
+            Box(
                 modifier = Modifier
                     .fillMaxHeight(.7f)
                     .fillMaxWidth()
@@ -56,14 +57,19 @@ fun WonderCard(
                         transitionScope.rememberSharedContentState(key = "$id-image"),
                         animatedVisibilityScope = contentScope
                     )
-                    .clip(
-                        CardDefaults.shape
-                    ),
-                contentDescription = "Image of $name",
-                error = {
-                    Icon(Icons.Outlined.ImageNotSupported, contentDescription = "Error")
-                },
-            )
+            ) {
+                DefaultAsyncImage(
+                    imageUrl = imageUrl,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CardDefaults.shape),
+                    contentDescription = "Image of $name",
+                    error = {
+                        Icon(Icons.Outlined.ImageNotSupported, contentDescription = "Error")
+                    },
+                )
+            }
+
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

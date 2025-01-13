@@ -80,7 +80,7 @@ fun WonderCarousel(
             CarouselItem(
                 id = item.id,
                 name = item.name,
-                imageUrl = item.images.firstOrNull() ?: "",
+                imageUrl = item.imageUrl,
                 onClick = { onItemClick(item) },
                 modifier = itemModifier
                     .carouselTransition(it, pagerState),

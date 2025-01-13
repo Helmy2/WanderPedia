@@ -3,7 +3,7 @@ package com.example.wanderpedia.features.home.ui
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
-import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
+import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.domain.model.handleResource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.home.domain.usecase.GetCurrentUserFlowUseCase
@@ -93,7 +93,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToDetail(wonder: WonderWithDigitalis) {
+    private fun navigateToDetail(wonder: Wonder) {
         setEffect { HomeContract.Effect.NavigateToDetail(wonder) }
     }
 }

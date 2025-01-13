@@ -30,7 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wanderpedia.core.domain.model.Wonder
+import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultAppBar
 import com.example.wanderpedia.core.ui.component.DefaultAsyncImage
@@ -40,7 +40,7 @@ import com.example.wanderpedia.core.ui.component.placeholder
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun DetailContent(
-    wonder: Wonder?,
+    wonder: WonderWithDigitalis?,
     loading: Boolean,
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit,

@@ -15,15 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
+import com.example.wanderpedia.core.domain.model.Wonder
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WonderRow(
     title: String,
-    onItemClick: (WonderWithDigitalis) -> Unit,
-    wonderList: List<WonderWithDigitalis>,
+    onItemClick: (Wonder) -> Unit,
+    wonderList: List<Wonder>,
     itemModifier: Modifier = Modifier,
     modifier: Modifier = Modifier,
     transitionScope: SharedTransitionScope,
@@ -57,7 +57,7 @@ fun WonderRow(
             items(wonderList, key = { it.id }) {
                 WonderCard(
                     id = it.id,
-                    imageUrl = it.images.firstOrNull() ?: "",
+                    imageUrl = it.imageUrl,
                     name = it.name,
                     location = it.location,
                     transitionScope = transitionScope,

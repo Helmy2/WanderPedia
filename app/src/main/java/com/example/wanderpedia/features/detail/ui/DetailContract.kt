@@ -1,6 +1,6 @@
 package com.example.wanderpedia.features.detail.ui
 
-import com.example.wanderpedia.core.domain.model.Wonder
+import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
 import com.example.wanderpedia.core.ui.ViewEffect
 import com.example.wanderpedia.core.ui.ViewEvent
 import com.example.wanderpedia.core.ui.ViewState
@@ -8,7 +8,7 @@ import com.example.wanderpedia.core.ui.ViewState
 class DetailContract {
     data class State(
         val loading: Boolean = true,
-        val wonder: Wonder? = null
+        val wonder: WonderWithDigitalis? = null
     ) : ViewState
 
     sealed class Event : ViewEvent {
