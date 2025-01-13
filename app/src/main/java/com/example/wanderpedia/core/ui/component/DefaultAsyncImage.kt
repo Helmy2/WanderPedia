@@ -1,6 +1,7 @@
 package com.example.wanderpedia.core.ui.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -27,7 +28,9 @@ fun DefaultAsyncImage(
             error = { error },
             loading = {
                 Box(
-                    modifier = modifier.placeholder(true)
+                    modifier = modifier
+                        .fillMaxSize()
+                        .placeholder(true)
                 )
             }
         )

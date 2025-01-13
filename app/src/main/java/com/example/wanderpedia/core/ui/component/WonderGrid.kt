@@ -52,7 +52,7 @@ fun WonderGrid(
                 modifier = Modifier.height(300.dp)
             )
         }
-        items(wonders) { wonder ->
+        items(wonders, key = { it.id }) { wonder ->
             WonderCard(
                 id = wonder.id,
                 name = wonder.name,

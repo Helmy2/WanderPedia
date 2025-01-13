@@ -13,7 +13,6 @@ class HomeContract {
         val user: User = User(displayName = "user"),
         val ancientWonders: WonderList = WonderList(Category.AncientWonders, emptyList()),
         val modernWonders: WonderList = WonderList(Category.ModernWonders, emptyList()),
-        val newWonders: WonderList = WonderList(Category.NewWonders, emptyList()),
     ) : ViewState
 
     sealed class Event : ViewEvent {

@@ -40,7 +40,6 @@ fun HomeContent(
     userImageUrl: String,
     ancientWonders: WonderList,
     modernWonders: WonderList,
-    newWonders: WonderList,
     modifier: Modifier = Modifier,
     onItemClick: (id: String) -> Unit,
 ) {
@@ -66,21 +65,12 @@ fun HomeContent(
                 contentPadding = PaddingValues(horizontal = 50.dp),
                 modifier = Modifier.height(200.dp),
                 itemModifier = Modifier.width(300.dp),
-            )
-            WonderRow(
-                title = modernWonders.name,
-                wonderList = modernWonders.wonders,
-                onItemClick = { onItemClick(it.id) },
-                modifier = Modifier.height(350.dp),
-                itemModifier = Modifier
-                    .width(200.dp)
-                    .padding(horizontal = 8.dp),
                 transitionScope = transitionScope,
                 contentScope = contentScope,
             )
             WonderRow(
-                title = newWonders.name,
-                wonderList = newWonders.wonders,
+                title = modernWonders.name,
+                wonderList = modernWonders.wonders,
                 onItemClick = { onItemClick(it.id) },
                 modifier = Modifier.height(350.dp),
                 itemModifier = Modifier

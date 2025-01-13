@@ -1,5 +1,8 @@
 package com.example.wanderpedia.core.ui.component
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
@@ -33,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WonderCarousel(
     wonderList: List<Wonder>,
@@ -41,6 +45,8 @@ fun WonderCarousel(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     itemModifier: Modifier = Modifier,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
 ) {
     val pageCount = remember { wonderList.size + 400 }
 
@@ -72,20 +78,26 @@ fun WonderCarousel(
         if (wonderList.isNotEmpty()) {
             val item = wonderList[it % wonderList.size]
             CarouselItem(
+                id = item.id,
                 name = item.name,
                 imageUrl = item.images.firstOrNull() ?: "",
                 onClick = { onItemClick(item) },
                 modifier = itemModifier
-                    .carouselTransition(it, pagerState)
+                    .carouselTransition(it, pagerState),
+                transitionScope = transitionScope,
+                contentScope = contentScope
             )
         } else {
             CarouselItem(
                 loading = true,
+                id = "",
                 name = "",
                 imageUrl = "",
                 onClick = {},
                 modifier = itemModifier
-                    .carouselTransition(it, pagerState)
+                    .carouselTransition(it, pagerState),
+                transitionScope = transitionScope,
+                contentScope = contentScope
             )
         }
     }
@@ -102,51 +114,63 @@ fun Modifier.carouselTransition(page: Int, pagerState: PagerState) = graphicsLay
     scaleY = transformation
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun CarouselItem(
+    id: String,
     imageUrl: String,
     name: String,
     onClick: () -> Unit,
     loading: Boolean = false,
     modifier: Modifier = Modifier,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier,
-    ) {
-        Box {
-            DefaultAsyncImage(
-                imageUrl,
-                contentDescription = name,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .placeholder(loading)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.surface
-                            ),
+    with(transitionScope) {
+        Card(
+            onClick = onClick,
+            modifier = Modifier.sharedElement(
+                transitionScope.rememberSharedContentState(key = "$id-image"),
+                animatedVisibilityScope = contentScope
+            ) then modifier,
+        ) {
+            Box {
+                DefaultAsyncImage(
+                    imageUrl,
+                    contentDescription = name,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .placeholder(loading)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color.Transparent,
+                                    MaterialTheme.colorScheme.surface
+                                ),
+                            )
                         )
-                    )
-            )
-            Text(
-                text = name,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .align(Alignment.BottomCenter),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+                )
+                Text(
+                    text = name,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.BottomCenter)
+                        .sharedElement(
+                            transitionScope.rememberSharedContentState(key = "$id-name"),
+                            animatedVisibilityScope = contentScope
+                        ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
     }
 }
-

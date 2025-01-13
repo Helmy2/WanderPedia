@@ -55,7 +55,7 @@ fun WonderRow(
                         .fillMaxHeight()
                 )
             }
-            items(wonderList) {
+            items(wonderList, key = { it.id }) {
                 with(transitionScope) {
                     WonderCard(
                         id = it.id,

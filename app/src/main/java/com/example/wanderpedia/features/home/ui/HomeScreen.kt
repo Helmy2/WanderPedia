@@ -42,7 +42,6 @@ fun HomeScreen(
         userImageUrl = state.user.imageUrl,
         ancientWonders = state.ancientWonders,
         modernWonders = state.modernWonders,
-        newWonders = state.newWonders,
         transitionScope = transitionScope,
         contentScope = contentScope,
         onItemClick = { viewModel.handleEvents(HomeContract.Event.OnItemClick(it)) }

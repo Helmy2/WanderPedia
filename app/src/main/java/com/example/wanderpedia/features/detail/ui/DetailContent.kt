@@ -63,7 +63,7 @@ fun DetailContent(
                 ) {
 
                     Box(
-                        modifier = Modifier.sharedBounds(
+                        modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = "${wonder.id}-image"),
                             animatedVisibilityScope = contentScope,
                         )
@@ -83,8 +83,6 @@ fun DetailContent(
                         }
                     }
 
-
-
                     FlowRow {
                         wonder.categories.forEach {
                             Card(
@@ -101,7 +99,7 @@ fun DetailContent(
                     Text(
                         text = wonder.name,
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.sharedBounds(
+                        modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = "${wonder.id}-name"),
                             animatedVisibilityScope = contentScope,
                         )
@@ -109,7 +107,7 @@ fun DetailContent(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.sharedBounds(
+                        modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = "${wonder.id}-location"),
                             animatedVisibilityScope = contentScope,
                         )
@@ -168,6 +166,7 @@ fun ImageSlider(
             DefaultAsyncImage(
                 imageUrl = list[it % list.size],
                 contentDescription = "Image of the Wander",
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }

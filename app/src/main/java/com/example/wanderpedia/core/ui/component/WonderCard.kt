@@ -77,13 +77,13 @@ fun WonderCard(
                         .fillMaxWidth()
                         .placeholder(loading)
                         .sharedElement(
-                            transitionScope.rememberSharedContentState(key = "$id-title"),
+                            transitionScope.rememberSharedContentState(key = "$id-name"),
                             animatedVisibilityScope = contentScope
                         ),
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.sharedBounds(
+                    modifier = Modifier.sharedElement(
                         transitionScope.rememberSharedContentState(key = "$id-location"),
                         animatedVisibilityScope = contentScope
                     )
