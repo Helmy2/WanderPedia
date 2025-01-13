@@ -21,8 +21,6 @@ fun AppNavHost(
     stateDestinations: AppDestinations,
     modifier: Modifier = Modifier,
 ) {
-//    sharedTransitionScope
-//    animatedVisibilityScope: AnimatedVisibilityScope
     SharedTransitionLayout {
         NavHost(
             navController = navController,

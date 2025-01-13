@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.ui.component.BackButton
+import com.example.wanderpedia.core.ui.component.DefaultAppBar
 import com.example.wanderpedia.core.ui.component.DefaultAsyncImage
 import com.example.wanderpedia.core.ui.component.carouselTransition
 import com.example.wanderpedia.core.ui.component.placeholder
@@ -61,7 +62,6 @@ fun DetailContent(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
                     Box(
                         modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = "${wonder.id}-image"),
@@ -75,12 +75,13 @@ fun DetailContent(
                             modifier = Modifier.height(200.dp),
                             itemModifier = Modifier.fillMaxWidth(),
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            BackButton(onClick = navigateBack)
-                        }
+                        DefaultAppBar(
+                            transitionScope = transitionScope,
+                            contentScope = contentScope,
+                            leadingContent = {
+                                BackButton(onClick = navigateBack)
+                            },
+                        )
                     }
 
                     FlowRow {

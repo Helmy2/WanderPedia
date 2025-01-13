@@ -1,6 +1,8 @@
 package com.example.wanderpedia.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -33,7 +35,11 @@ fun WonderNav(
 
     Scaffold(
         bottomBar = {
-            AnimatedVisibility(TOP_LEVEL_ROUTES.any { it.route.hashCode() == currentDestination?.id }) {
+            AnimatedVisibility(
+                TOP_LEVEL_ROUTES.any { it.route.hashCode() == currentDestination?.id },
+                enter = slideInVertically(initialOffsetY = { +it }),
+                exit = slideOutVertically(targetOffsetY = { +it })
+            ) {
                 DefaultNavBar(
                     label = { Text(text = it.name) },
                     selected = { currentDestination?.id == it.route.hashCode() },

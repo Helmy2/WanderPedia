@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.R
+import com.example.wanderpedia.core.ui.component.DefaultAppBar
 import com.example.wanderpedia.core.ui.component.DefaultAsyncImage
 import com.example.wanderpedia.core.ui.component.DefaultCircleButton
 import com.example.wanderpedia.core.ui.component.WonderCarousel
@@ -53,11 +52,12 @@ fun HomeContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 16.dp)
         ) {
-            ProfileField(
+            ProfileBar(
                 imageUrl = userImageUrl,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
+                transitionScope = transitionScope,
+                contentScope = contentScope,
             )
             WonderCarousel(
                 wonderList = ancientWonders.wonders,
@@ -83,36 +83,39 @@ fun HomeContent(
     }
 }
 
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ProfileField(
-    modifier: Modifier = Modifier,
+private fun ProfileBar(
     imageUrl: String,
     iconSize: Dp = 48.dp,
+    modifier: Modifier = Modifier,
+    transitionScope: SharedTransitionScope,
+    contentScope: AnimatedContentScope,
 ) {
-    Row(
-        modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        DefaultCircleButton(
-            onClick = { },
-            modifier = Modifier.size(iconSize)
-        ) {
-            DefaultAsyncImage(
-                contentDescription = "profile",
-                imageUrl = imageUrl,
-                error = { Image(painterResource(R.drawable.profile), "profile") },
-            )
-        }
-
-        DefaultCircleButton(
-            onClick = { },
-            modifier = Modifier.size(iconSize)
-        ) {
-            Icon(
-                Icons.Outlined.Notifications,
-                contentDescription = "Notifications",
-            )
-        }
-    }
+    DefaultAppBar(modifier = modifier,
+        transitionScope = transitionScope,
+        contentScope = contentScope,
+        leadingContent = {
+            DefaultCircleButton(
+                onClick = { }, modifier = Modifier.size(iconSize)
+            ) {
+                DefaultAsyncImage(
+                    contentDescription = "profile",
+                    imageUrl = imageUrl,
+                    error = { Image(painterResource(R.drawable.profile), "profile") },
+                )
+            }
+        },
+        trailingContent = {
+            DefaultCircleButton(
+                onClick = { }, modifier = Modifier.size(iconSize)
+            ) {
+                Icon(
+                    Icons.Outlined.Notifications,
+                    contentDescription = "Notifications",
+                )
+            }
+        })
 }
+
