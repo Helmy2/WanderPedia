@@ -1,4 +1,4 @@
-package com.example.wanderpedia.features.auth.domain.usecase
+package com.example.wanderpedia.core.domain.usecase
 
 import android.content.Context
 import com.example.wanderpedia.core.domain.repository.CredentialRepository

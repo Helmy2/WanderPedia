@@ -51,6 +51,10 @@ class AccountServiceImpl @Inject constructor(
     ) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         getCurrentUser().linkWithCredential(credential).await()
+        // Sign the user out of their current Anonymous account.
+        // Sign the user back in with their Google account.
+        firebaseAuth.signOut()
+        signInWithGoogle(idToken)
     }
 
     override suspend fun linkAccountWithEmail(
@@ -60,11 +64,6 @@ class AccountServiceImpl @Inject constructor(
         getCurrentUser().linkWithCredential(credential).await()
     }
 
-    override suspend fun signUpWithEmail(
-        email: String, password: String
-    ) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-    }
 
     override suspend fun signInWithGoogle(
         idToken: String

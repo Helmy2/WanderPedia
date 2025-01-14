@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Resource
+import com.example.wanderpedia.core.domain.usecase.GetGoogleCredentialUseCase
 import com.example.wanderpedia.core.ui.BaseViewModel
-import com.example.wanderpedia.features.auth.domain.usecase.GetGoogleCredentialUseCase
 import com.example.wanderpedia.features.auth.domain.usecase.SignInWithEmailUseCase
 import com.example.wanderpedia.features.auth.domain.usecase.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

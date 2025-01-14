@@ -1,4 +1,4 @@
-package com.example.wanderpedia.features.home.domain.usecase
+package com.example.wanderpedia.core.domain.usecase
 
 import com.example.wanderpedia.core.domain.repository.UserRepository
 import javax.inject.Inject

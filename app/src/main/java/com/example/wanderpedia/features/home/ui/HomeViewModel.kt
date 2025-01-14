@@ -5,8 +5,8 @@ import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.domain.model.handleResource
+import com.example.wanderpedia.core.domain.usecase.GetCurrentUserFlowUseCase
 import com.example.wanderpedia.core.ui.BaseViewModel
-import com.example.wanderpedia.features.home.domain.usecase.GetCurrentUserFlowUseCase
 import com.example.wanderpedia.features.home.domain.usecase.GetWondersByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher

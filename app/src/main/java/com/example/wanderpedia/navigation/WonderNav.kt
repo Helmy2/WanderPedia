@@ -12,9 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -36,6 +39,10 @@ fun WonderNav(
     val currentDestination = navBackStackEntry?.destination
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val viewModel: WonderViewModel = hiltViewModel()
+    var isOnboardingScreen = rememberSaveable {
+        mutableStateOf(false)
+    }
 
     ObserveEffect(SnackbarController.events, snackbarHostState) {
         scope.launch {
@@ -53,45 +60,44 @@ fun WonderNav(
     }
 
     LaunchedEffect(Unit) {
-        // TODO Simulate a delay before hiding the splash screen
+        viewModel.initialize(
+            showOnboarding = {
+                isOnboardingScreen.value = it
+            },
+        )
         delay(100)
         onSplashHidden()
     }
 
-    Scaffold(
-        bottomBar = {
-            AnimatedVisibility(
-                TOP_LEVEL_ROUTES.any { it.route.hashCode() == currentDestination?.id },
-                enter = slideInVertically(initialOffsetY = { +it }),
-                exit = slideOutVertically(targetOffsetY = { +it })
-            ) {
-                DefaultNavBar(
-                    label = { Text(text = it.name) },
-                    selected = { currentDestination?.id == it.route.hashCode() },
-                    icon = {
-                        Icon(
-                            it.icon,
-                            contentDescription = it.name
-                        )
-                    },
-                    onClick = {
-                        navController.navigate(route = it.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+    Scaffold(bottomBar = {
+        AnimatedVisibility(
+            TOP_LEVEL_ROUTES.any { it.route.hashCode() == currentDestination?.id },
+            enter = slideInVertically(initialOffsetY = { +it }),
+            exit = slideOutVertically(targetOffsetY = { +it })
+        ) {
+            DefaultNavBar(label = { Text(text = it.name) },
+                selected = { currentDestination?.id == it.route.hashCode() },
+                icon = {
+                    Icon(
+                        it.icon, contentDescription = it.name
+                    )
+                },
+                onClick = {
+                    navController.navigate(route = it.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                )
-            }
-        },
-        snackbarHost = {
-            DefaultSnackbarHost(snackbarHostState)
+                })
         }
-    ) { padding ->
+    }, snackbarHost = {
+        DefaultSnackbarHost(snackbarHostState)
+    }) { padding ->
         AppNavHost(
-            stateDestinations = AppDestinations.Home,
+            stateDestinations = if (isOnboardingScreen.value) AppDestinations.Onboarding
+            else AppDestinations.Home,
             navController = navController,
             modifier = Modifier.padding(padding),
         )

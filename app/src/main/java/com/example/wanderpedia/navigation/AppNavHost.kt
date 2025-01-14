@@ -12,6 +12,7 @@ import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
 import com.example.wanderpedia.features.detail.ui.navigatoin.detailNavigation
 import com.example.wanderpedia.features.discover.ui.navigation.discoverNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
+import com.example.wanderpedia.features.profile.ui.navigation.profileNavigation
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -46,13 +47,16 @@ fun AppNavHost(
             composable<AppDestinations.Favorite> {
                 Text("Favorite")
             }
-            composable<AppDestinations.Profile> {
-                Text("Profile")
-            }
+            profileNavigation(
+                navigateToLogin = { navController.navigate(AppDestinations.Auth) }
+            )
             detailNavigation(
                 transitionScope = this@SharedTransitionLayout,
                 navigateBack = { navController.popBackStack() }
             )
+            composable<AppDestinations.Onboarding> {
+                Text("Onboarding")
+            }
         }
     }
 }

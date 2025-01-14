@@ -10,7 +10,7 @@ import com.example.wanderpedia.core.ui.ViewState
 class HomeContract {
     data class State(
         val loading: Boolean = true,
-        val user: User = User.EMPTY,
+        val user: User = User(),
         val ancientWonders: WonderList = WonderList(Category.AncientWonders),
         val modernWonders: WonderList = WonderList(Category.ModernWonders),
     ) : ViewState

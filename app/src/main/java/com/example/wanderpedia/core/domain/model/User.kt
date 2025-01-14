@@ -8,8 +8,4 @@ data class User(
     val displayName: String = "",
     val imageUrl: String = "",
     val isAnonymous: Boolean = true
-) {
-    companion object {
-        val EMPTY = User(displayName = "")
-    }
-}
+)

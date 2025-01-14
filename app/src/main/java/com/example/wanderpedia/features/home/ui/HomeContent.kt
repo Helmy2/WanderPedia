@@ -101,7 +101,14 @@ private fun ProfileBar(
                 DefaultAsyncImage(
                     contentDescription = "profile",
                     imageUrl = imageUrl,
-                    error = { Image(painterResource(R.drawable.profile), "profile") },
+                    error = {
+                        Image(
+                            painterResource(R.drawable.profile),
+                            "profile",
+                            Modifier.fillMaxSize()
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         },

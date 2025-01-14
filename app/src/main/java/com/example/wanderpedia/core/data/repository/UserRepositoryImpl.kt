@@ -76,13 +76,6 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUpWithEmail(
-        email: String, password: String
-    ) = withContext(ioDispatcher) {
-        safeResource {
-            accountService.signUpWithEmail(email, password)
-        }
-    }
 
     override suspend fun resetPassword(email: String) = withContext(ioDispatcher) {
         safeResource {
