@@ -17,14 +17,14 @@ class DiscoverContract {
 
     sealed class Event : ViewEvent {
         data class UpdateFilter(val filters: Filter) : Event()
-        data class OnItemClick(val id: String) : Event()
+        data class OnItemClick(val wonder: Wonder) : Event()
         data class UpdateShowFilterDialog(val show: Boolean) : Event()
         data object RestFilters : Event()
     }
 
     sealed class Effect : ViewEffect {
         data class ShowErrorToast(val message: String) : Effect()
-        data class NavigateToDetail(val id: String) : Effect()
+        data class NavigateToDetail(val wonder: Wonder) : Effect()
     }
 
     data class Filter(

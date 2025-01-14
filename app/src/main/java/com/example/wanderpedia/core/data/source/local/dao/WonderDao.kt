@@ -22,7 +22,7 @@ interface WonderDao {
     @Query("SELECT * FROM cached_wonders WHERE id = :id")
     suspend fun getWonderById(id: String): CachedWonder?
 
-    @Query("SELECT * FROM cached_wonders WHERE :category IN (categories)")
+    @Query("SELECT * FROM cached_wonders WHERE (categories) LIKE '%' || :category || '%'")
     fun getWonderByCategory(category: String): Flow<List<CachedWonder>>
 
     @Query(

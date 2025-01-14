@@ -10,7 +10,6 @@ import com.example.wanderpedia.features.home.domain.usecase.GetCurrentUserFlowUs
 import com.example.wanderpedia.features.home.domain.usecase.GetWondersByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -78,7 +77,7 @@ class HomeViewModel @Inject constructor(
         updateStateWithData: (WonderList) -> Unit
     ) {
         viewModelScope.launch(ioDispatcher) {
-            getWondersByCategoryUseCase(category).collectLatest { resource ->
+            getWondersByCategoryUseCase(category).collect { resource ->
                 resource.handleResource(
                     onSuccess = { data -> updateStateWithData(WonderList(category, data)) },
                     onError = { errorMessage ->

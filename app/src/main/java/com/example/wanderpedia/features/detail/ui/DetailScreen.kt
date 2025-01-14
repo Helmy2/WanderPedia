@@ -3,14 +3,13 @@ package com.example.wanderpedia.features.detail.ui
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.collectLatest
+import com.example.wanderpedia.core.ui.ObserveEffect
+import com.example.wanderpedia.core.ui.SnackbarController
+import com.example.wanderpedia.core.ui.SnackbarEvent
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -22,19 +21,19 @@ fun DetailScreen(
     contentScope: AnimatedContentScope
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(viewModel.effect) {
-        viewModel.effect.collectLatest { effect ->
-            when (effect) {
-                is DetailContract.Effect.ShowErrorToast -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(message = effect.message)
-                }
+    ObserveEffect(viewModel.effect, viewModel) {
+        when (it) {
+            is DetailContract.Effect.ShowErrorToast -> {
+                SnackbarController.sendEvent(
+                    event = SnackbarEvent(
+                        message = it.message
+                    )
+                )
+            }
 
-                is DetailContract.Effect.NavigateBack -> {
-                    navigateBack()
-                }
+            is DetailContract.Effect.NavigateBack -> {
+                navigateBack()
             }
         }
     }

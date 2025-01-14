@@ -3,6 +3,7 @@ package com.example.wanderpedia.features.discover.ui
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Resource
+import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.domain.model.toCached
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.discover.domain.usecase.GetWondersByUseCase
@@ -28,7 +29,7 @@ class DiscoverViewModel @Inject constructor(
     override fun handleEvents(event: DiscoverContract.Event) {
         when (event) {
             is DiscoverContract.Event.UpdateFilter -> applyFilters(event.filters)
-            is DiscoverContract.Event.OnItemClick -> navigateToDetail(event.id)
+            is DiscoverContract.Event.OnItemClick -> navigateToDetail(event.wonder)
             is DiscoverContract.Event.UpdateShowFilterDialog -> setState { copy(showFilterDialog = event.show) }
             DiscoverContract.Event.RestFilters -> applyFilters(DiscoverContract.Filter())
         }
@@ -73,7 +74,7 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToDetail(id: String) {
-        setEffect { DiscoverContract.Effect.NavigateToDetail(id) }
+    private fun navigateToDetail(wonder: Wonder) {
+        setEffect { DiscoverContract.Effect.NavigateToDetail(wonder) }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -24,7 +23,7 @@ fun WonderGrid(
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
     header: @Composable () -> Unit = {},
-    onItemClick: (id: String) -> Unit,
+    onItemClick: (Wonder) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalStaggeredGrid(
@@ -49,7 +48,6 @@ fun WonderGrid(
                 onClick = { },
                 transitionScope = transitionScope,
                 contentScope = contentScope,
-                modifier = Modifier.height(300.dp)
             )
         }
         items(wonders, key = { it.id }) { wonder ->
@@ -60,7 +58,7 @@ fun WonderGrid(
                 imageUrl = wonder.imageUrl,
                 transitionScope = transitionScope,
                 contentScope = contentScope,
-                onClick = { onItemClick(wonder.id) },
+                onClick = { onItemClick(wonder) },
             )
         }
     }
