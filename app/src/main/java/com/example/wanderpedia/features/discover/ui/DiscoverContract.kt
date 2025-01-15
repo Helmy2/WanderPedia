@@ -7,10 +7,10 @@ import com.example.wanderpedia.core.ui.ViewEffect
 import com.example.wanderpedia.core.ui.ViewEvent
 import com.example.wanderpedia.core.ui.ViewState
 
-class DiscoverContract {
+object DiscoverContract {
     data class State(
         val loading: Boolean = true,
-        val showFilterDialog: Boolean = false,
+        val showDialog: Boolean = false,
         val wonders: List<Wonder> = emptyList(),
         val filter: Filter = Filter(),
     ) : ViewState
@@ -18,7 +18,7 @@ class DiscoverContract {
     sealed class Event : ViewEvent {
         data class UpdateFilter(val filters: Filter) : Event()
         data class OnItemClick(val wonder: Wonder) : Event()
-        data class UpdateShowFilterDialog(val show: Boolean) : Event()
+        data class UpdateShowDialog(val show: Boolean) : Event()
         data object RestFilters : Event()
     }
 

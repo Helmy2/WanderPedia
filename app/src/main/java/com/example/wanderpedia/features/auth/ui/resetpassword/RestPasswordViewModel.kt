@@ -2,7 +2,6 @@ package com.example.wanderpedia.features.auth.ui.resetpassword
 
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.auth.domain.usecase.ResetPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,14 +30,11 @@ class RestPasswordViewModel @Inject constructor(
     private fun resetPassword() {
         viewModelScope.launch(ioDispatcher) {
             setState { copy(loading = true) }
-            val result = resetPasswordUseCase(state.value.email)
-            when (result) {
-                is Resource.Error -> setEffect { RestPasswordContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                is Resource.Success -> setState { copy(showDialog = true) }
+            resetPasswordUseCase(state.value.email).apply {
+                fold(onSuccess = { setState { copy(showDialog = true) } },
+                    onFailure = { setEffect { RestPasswordContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) } })
             }
             setState { copy(loading = false) }
         }
     }
-
-
 }

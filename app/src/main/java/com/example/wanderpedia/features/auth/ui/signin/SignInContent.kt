@@ -29,37 +29,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.R
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultButton
 import com.example.wanderpedia.core.ui.component.DefaultTextField
-import com.example.wanderpedia.core.ui.theme.WanderPediaTheme
 
 
 @Composable
 fun SignInContent(
-    email: String,
-    password: String,
-    loading: Boolean,
-    isPasswordHidden: Boolean,
-    isValuedSignInWithEmail: Boolean,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onForgetPasswordClick: () -> Unit,
-    onSignWithEmailInClick: () -> Unit,
-    onSignWithGoogle: () -> Unit,
-    onSignUpClick: () -> Unit,
-    onNavigateBack: () -> Unit,
-    onPasswordHiddenClick: (Boolean) -> Unit,
+    state: SignInContract.State,
+    onEvent: (SignInContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -67,7 +57,8 @@ fun SignInContent(
         contentAlignment = Alignment.Center,
     ) {
         BackButton(
-            onClick = onNavigateBack, modifier = Modifier
+            onClick = { onEvent(SignInContract.Event.NavigateBack) },
+            modifier = Modifier
                 .padding(32.dp)
                 .align(Alignment.TopStart)
         )
@@ -81,56 +72,32 @@ fun SignInContent(
             TitleField(modifier = Modifier.padding(8.dp))
             Spacer(modifier = Modifier.height(8.dp))
             EmailField(
-                email = email,
-                onValueChange = onEmailChange,
+                email = state.email,
+                onValueChange = { onEvent(SignInContract.Event.UpdateEmail(it)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             PasswordField(
-                password = password,
-                onValueChange = onPasswordChange,
-                isHidden = isPasswordHidden,
-                onIsHiddenChange = onPasswordHiddenClick,
+                password = state.password,
+                onValueChange = { onEvent(SignInContract.Event.UpdatePassword(it)) },
+                isHidden = !state.isPasswordVisible,
+                toggleVisibility = { onEvent(SignInContract.Event.TogglePasswordVisibility) },
                 modifier = Modifier.fillMaxWidth()
             )
             ForgetPasswordField(
                 modifier = Modifier.align(Alignment.End),
-                onClick = onForgetPasswordClick,
+                onClick = { onEvent(SignInContract.Event.NavigateToForgotPassword) },
             )
             Spacer(modifier = Modifier.height(16.dp))
             SignButtonField(
-                loading = loading,
-                isValuedSignInWithEmail = isValuedSignInWithEmail,
-                onSignWithEmailInClick = onSignWithEmailInClick,
-                onSignWithGoogle = onSignWithGoogle
+                loading = state.loading,
+                isValuedSignInWithEmail = state.isValuedSignInWithEmail,
+                onSignWithEmailInClick = { onEvent(SignInContract.Event.SignInWithEmail) },
+                onSignWithGoogle = { onEvent(SignInContract.Event.SignInWithGoogle(context)) },
             )
-            SignUpField(onClick = onSignUpClick)
+            SignUpField(onClick = { onEvent(SignInContract.Event.NavigateToSignUp) })
         }
     }
 }
-
-
-@Preview(showSystemUi = true)
-@Composable
-private fun SignInContentPrev() {
-    WanderPediaTheme {
-        SignInContent(
-            email = "",
-            password = "",
-            loading = false,
-            onEmailChange = {},
-            onPasswordChange = {},
-            onForgetPasswordClick = {},
-            onSignWithEmailInClick = {},
-            onSignWithGoogle = {},
-            onSignUpClick = {},
-            onNavigateBack = {},
-            isPasswordHidden = false,
-            isValuedSignInWithEmail = false,
-            onPasswordHiddenClick = {},
-        )
-    }
-}
-
 
 @Composable
 private fun PasswordField(
@@ -138,7 +105,7 @@ private fun PasswordField(
     isHidden: Boolean,
     isValuedPassword: Boolean = true,
     onValueChange: (String) -> Unit,
-    onIsHiddenChange: (Boolean) -> Unit,
+    toggleVisibility: () -> Unit,
     supportingText: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier.Companion
 ) {
@@ -153,7 +120,7 @@ private fun PasswordField(
             imeAction = ImeAction.Companion.Done, keyboardType = KeyboardType.Companion.Password
         ),
         trailingIcon = {
-            IconButton(onClick = { onIsHiddenChange(!isHidden) }) {
+            IconButton(onClick = toggleVisibility) {
                 Icon(
                     imageVector = if (isHidden) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     contentDescription = if (isHidden) "Show password" else "Hide password"
@@ -206,8 +173,7 @@ private fun SignButtonField(
             }
             Spacer(modifier = Modifier.height(8.dp))
             DefaultButton(
-                enabled = !loading,
-                onClick = onSignWithGoogle
+                enabled = !loading, onClick = onSignWithGoogle
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.google),

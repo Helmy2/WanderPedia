@@ -3,7 +3,6 @@ package com.example.wanderpedia.features.auth.ui.signin
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.usecase.GetGoogleCredentialUseCase
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.auth.domain.usecase.SignInWithEmailUseCase
@@ -28,7 +27,7 @@ class SignInViewModel
             is SignInContract.Event.UpdateEmail -> setState { copy(email = event.email) }
             is SignInContract.Event.UpdateLoading -> setState { copy(loading = event.loading) }
             is SignInContract.Event.UpdatePassword -> setState { copy(password = event.password) }
-            is SignInContract.Event.UpdatePasswordVisibility -> setState { copy(isPasswordVisible = event.isVisible) }
+            is SignInContract.Event.TogglePasswordVisibility -> setState { copy(isPasswordVisible = isPasswordVisible.not()) }
             is SignInContract.Event.SignInWithGoogle -> signInWithGoogle(event.context)
             SignInContract.Event.NavigateBack -> setEffect { SignInContract.Effect.NavigateBack }
             SignInContract.Event.NavigateNext -> setEffect { SignInContract.Effect.NavigateNext }
@@ -41,17 +40,19 @@ class SignInViewModel
     private fun signInWithGoogle(context: Context) {
         viewModelScope.launch(ioDispatcher) {
             setState { copy(loading = true) }
-
-            val credential = credentialUseCase(context)
-            val result = when (credential) {
-                is Resource.Error -> Resource.Error(credential.error)
-                is Resource.Success -> signInWithGoogleUseCase(credential.data)
+            credentialUseCase(context).apply {
+                fold(
+                    onFailure = { setEffect { SignInContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) } },
+                    onSuccess = {
+                        signInWithGoogleUseCase(it).apply {
+                            fold(
+                                onFailure = { setEffect { SignInContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) } },
+                                onSuccess = { setEffect { SignInContract.Effect.NavigateNext } }
+                            )
+                        }
+                    }
+                )
             }
-            when (result) {
-                is Resource.Error -> setEffect { SignInContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                is Resource.Success -> setEffect { SignInContract.Effect.NavigateNext }
-            }
-
             setState { copy(loading = false) }
         }
     }
@@ -59,10 +60,11 @@ class SignInViewModel
     private fun signInWithEmail() {
         viewModelScope.launch(ioDispatcher) {
             setState { copy(loading = true) }
-            val result = signInWithEmailUseCase(state.value.email, state.value.password)
-            when (result) {
-                is Resource.Error -> setEffect { SignInContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                is Resource.Success -> setEffect { SignInContract.Effect.NavigateNext }
+            signInWithEmailUseCase(state.value.email, state.value.password).apply {
+                fold(
+                    onFailure = { setEffect { SignInContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) } },
+                    onSuccess = { setEffect { SignInContract.Effect.NavigateNext } }
+                )
             }
             setState { copy(loading = false) }
         }

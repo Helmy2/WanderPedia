@@ -39,9 +39,8 @@ fun DetailScreen(
     }
 
     DetailContent(
-        wonder = state.wonder,
-        navigateBack = { viewModel.setEvent(DetailContract.Event.NavigateBack) },
-        loading = state.loading,
+        state = state,
+        handleEvents = viewModel::handleEvents,
         transitionScope = transitionScope,
         contentScope = contentScope
     )

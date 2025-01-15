@@ -3,9 +3,7 @@ package com.example.wanderpedia.core.data.repository
 import com.example.wanderpedia.core.data.error.AuthException.UserNotFoundException
 import com.example.wanderpedia.core.data.source.remote.AccountService
 import com.example.wanderpedia.core.di.IoDispatcher
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.User
-import com.example.wanderpedia.core.domain.model.safeResource
 import com.example.wanderpedia.core.domain.repository.UserRepository
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,17 +17,17 @@ class UserRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : UserRepository {
-    override val currentUser: Flow<Resource<User>>
+    override val currentUser: Flow<Result<User>>
         get() = accountService.currentUser.map { user ->
             user?.let {
-                Resource.Success(user)
-            } ?: Resource.Error(UserNotFoundException())
+                Result.success(user)
+            } ?: Result.failure(UserNotFoundException())
         }.flowOn(ioDispatcher)
 
 
     override suspend fun createAnonymousAccount(
     ) = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.createAnonymousAccount()
         }
     }
@@ -37,7 +35,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateDisplayName(
         newDisplayName: String
     ) = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.updateDisplayName(newDisplayName)
         }
     }
@@ -45,7 +43,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun linkAccountWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential) =
         withContext(ioDispatcher) {
-            safeResource {
+            runCatching {
                 accountService.linkAccountWithGoogle(googleIdTokenCredential.idToken)
             }
         }
@@ -54,7 +52,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun linkAccountWithEmail(
         email: String, password: String
     ) = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.linkAccountWithEmail(email, password)
         }
     }
@@ -62,7 +60,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun signInWithGoogle(googleIdTokenCredential: GoogleIdTokenCredential) =
         withContext(ioDispatcher) {
-            safeResource {
+            runCatching {
                 accountService.signInWithGoogle(googleIdTokenCredential.idToken)
             }
         }
@@ -71,26 +69,26 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun signInWithEmail(
         email: String, password: String
     ) = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.signInWithEmail(email, password)
         }
     }
 
 
     override suspend fun resetPassword(email: String) = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.resetPassword(email)
         }
     }
 
     override suspend fun signOut() = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.signOut()
         }
     }
 
     override suspend fun deleteAccount() = withContext(ioDispatcher) {
-        safeResource {
+        runCatching {
             accountService.deleteAccount()
         }
     }

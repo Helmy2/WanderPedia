@@ -3,17 +3,13 @@ package com.example.wanderpedia.features.home.ui
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.Wonder
-import com.example.wanderpedia.core.domain.model.handleResource
 import com.example.wanderpedia.core.domain.usecase.GetCurrentUserFlowUseCase
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.home.domain.usecase.GetWondersByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -57,37 +53,29 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun fetchWondersByCategory(category: Category): List<Wonder> {
-        val result = getWondersByCategoryUseCase(category).firstOrNull()
-        when (result) {
-            is Resource.Error -> {
-                setEffect {
-                    HomeContract.Effect.ShowErrorToast(
-                        result.exception?.message ?: "Unknown error"
-                    )
-                }
-            }
-
-            is Resource.Success -> return result.data
-            null -> {
-                delay(1000)
-                fetchInitialData()
+        val result = getWondersByCategoryUseCase(category)
+        result.onFailure {
+            setEffect {
+                HomeContract.Effect.ShowErrorToast(
+                    it.localizedMessage ?: "Unknown error"
+                )
             }
         }
-        return emptyList()
+        return result.getOrNull() ?: emptyList()
     }
 
     private fun observeCurrentUser() {
         viewModelScope.launch(ioDispatcher) {
             getCurrentUserFlowUseCase().collect { resource ->
-                resource.handleResource(
+                resource.fold(
                     onSuccess = { user -> setState { copy(user = user) } },
-                    onError = { errorMessage ->
+                    onFailure = {
                         setEffect {
                             HomeContract.Effect.ShowErrorToast(
-                                errorMessage
+                                it.localizedMessage ?: "Unknown error"
                             )
                         }
-                    }
+                    },
                 )
             }
         }

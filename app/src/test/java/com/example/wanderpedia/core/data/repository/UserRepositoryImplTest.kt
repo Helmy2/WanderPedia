@@ -2,7 +2,6 @@ package com.example.wanderpedia.core.data.repository
 
 import com.example.wanderpedia.core.data.error.AuthException.UserNotFoundException
 import com.example.wanderpedia.core.data.source.remote.AccountService
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.User
 import com.example.wanderpedia.core.domain.repository.UserRepository
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -16,8 +15,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class UserRepositoryImplTest {
 
@@ -40,8 +38,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.currentUser.first()
 
-        assertIs<Resource.Success<User>>(result)
-        assertEquals(user, result.data)
+        assertTrue(result.isSuccess)
+        assertEquals(user, result.getOrNull())
     }
 
     @Test
@@ -50,8 +48,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.currentUser.first()
 
-        assertIs<Resource.Error>(result)
-        assertTrue(result.exception is UserNotFoundException)
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is UserNotFoundException)
     }
 
     @Test
@@ -61,7 +59,7 @@ class UserRepositoryImplTest {
 
             val result = userRepository.createAnonymousAccount()
 
-            assertIs<Resource.Success<Unit>>(result)
+            assertTrue(result.isSuccess)
         }
 
     @Test
@@ -72,8 +70,8 @@ class UserRepositoryImplTest {
 
             val result = userRepository.createAnonymousAccount()
 
-            assertIs<Resource.Error>(result)
-            assertEquals(exception, result.exception)
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
         }
 
     @Test
@@ -83,7 +81,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.updateDisplayName(newDisplayName)
 
-        assertIs<Resource.Success<Unit>>(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -94,8 +92,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.updateDisplayName(newDisplayName)
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 
     @Test
@@ -110,7 +108,7 @@ class UserRepositoryImplTest {
 
             val result = userRepository.linkAccountWithGoogle(googleIdTokenCredential)
 
-            assertIs<Resource.Success<Unit>>(result)
+            assertTrue(result.isSuccess)
         }
 
     @Test
@@ -125,8 +123,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.linkAccountWithGoogle(googleIdTokenCredential)
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 
     @Test
@@ -138,7 +136,7 @@ class UserRepositoryImplTest {
 
             val result = userRepository.linkAccountWithEmail(email, password)
 
-            assertIs<Resource.Success<Unit>>(result)
+            assertTrue(result.isSuccess)
         }
 
     @Test
@@ -150,8 +148,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.linkAccountWithEmail(email, password)
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 
     @Test
@@ -163,7 +161,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signInWithGoogle(googleIdTokenCredential)
 
-        assertIs<Resource.Success<Unit>>(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -178,8 +176,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signInWithGoogle(googleIdTokenCredential)
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 
     @Test
@@ -190,7 +188,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signInWithEmail(email, password)
 
-        assertIs<Resource.Success<Unit>>(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -202,8 +200,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signInWithEmail(email, password)
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 
     @Test
@@ -212,7 +210,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signOut()
 
-        assertIs<Resource.Success<Unit>>(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -222,8 +220,8 @@ class UserRepositoryImplTest {
 
         val result = userRepository.signOut()
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 
     @Test
@@ -232,7 +230,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.deleteAccount()
 
-        assertIs<Resource.Success<Unit>>(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -242,7 +240,7 @@ class UserRepositoryImplTest {
 
         val result = userRepository.deleteAccount()
 
-        assertIs<Resource.Error>(result)
-        assertEquals(exception, result.exception)
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 }

@@ -52,12 +52,12 @@ fun DiscoverContent(
                         text = state.filter.text,
                         onTextChange = {
                             handleEvents(
-                                DiscoverContract.Event.UpdateFilter(
-                                    state.filter.copy(text = it)
-                                )
+                                DiscoverContract.Event.UpdateFilter(state.filter.copy(text = it))
                             )
                         },
-                        onShowDialog = { DiscoverContract.Event.UpdateShowFilterDialog(true) },
+                        onShowDialog = {
+                            handleEvents(DiscoverContract.Event.UpdateShowDialog(true))
+                        },
                         modifier = Modifier
                             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                             .fillMaxWidth()
@@ -79,12 +79,12 @@ fun DiscoverContent(
                 }
             },
         )
-        AnimatedVisibility(state.showFilterDialog) {
+        if (state.showDialog) {
             FilterDialog(
                 filters = state.filter,
-                onDismiss = { handleEvents(DiscoverContract.Event.UpdateShowFilterDialog(false)) },
+                onDismiss = { handleEvents(DiscoverContract.Event.UpdateShowDialog(false)) },
                 onApplyFilters = {
-                    handleEvents(DiscoverContract.Event.UpdateShowFilterDialog(false))
+                    handleEvents(DiscoverContract.Event.UpdateShowDialog(false))
                     handleEvents(DiscoverContract.Event.UpdateFilter(it))
                 },
             )

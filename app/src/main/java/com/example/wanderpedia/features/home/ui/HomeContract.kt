@@ -7,7 +7,7 @@ import com.example.wanderpedia.core.ui.ViewEffect
 import com.example.wanderpedia.core.ui.ViewEvent
 import com.example.wanderpedia.core.ui.ViewState
 
-class HomeContract {
+object HomeContract {
     data class State(
         val loading: Boolean = true,
         val user: User = User(),

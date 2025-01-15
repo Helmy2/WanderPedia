@@ -21,26 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultButton
 import com.example.wanderpedia.core.ui.component.DefaultDialog
 import com.example.wanderpedia.core.ui.component.DefaultTextField
-import com.example.wanderpedia.core.ui.theme.WanderPediaTheme
 
 @Composable
 fun RestPasswordContent(
-    email: String,
-    showDislodge: Boolean,
-    isEmailValid: Boolean,
-    loading: Boolean,
+    state: RestPasswordContract.State,
+    handleEvents: (RestPasswordContract.Event) -> Unit,
     modifier: Modifier = Modifier,
-    onConfirmClick: () -> Unit,
-    onNavigateBack: () -> Unit,
-    onDismissRequest: () -> Unit,
-    onEmailChange: (String) -> Unit,
-    resetPasswordClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -48,9 +39,9 @@ fun RestPasswordContent(
             .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center,
     ) {
-        if (showDislodge) {
+        if (state.showDialog) {
             DefaultDialog(
-                onDismissRequest = onDismissRequest,
+                onDismissRequest = { handleEvents(RestPasswordContract.Event.DismissDialog) },
                 content = {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -68,8 +59,8 @@ fun RestPasswordContent(
 
                         TextButton(
                             onClick = {
-                                onDismissRequest()
-                                onConfirmClick()
+                                handleEvents(RestPasswordContract.Event.DismissDialog)
+                                handleEvents(RestPasswordContract.Event.NavigateNext)
                             },
                             modifier = Modifier.align(Alignment.End)
                         ) { Text("Confirm") }
@@ -79,7 +70,7 @@ fun RestPasswordContent(
         }
 
         BackButton(
-            onClick = onNavigateBack,
+            onClick = { handleEvents(RestPasswordContract.Event.NavigateBack) },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(32.dp),
@@ -103,15 +94,15 @@ fun RestPasswordContent(
             }
             Spacer(Modifier.height(8.dp))
             EmailField(
-                email = email,
-                onValueChange = onEmailChange,
+                email = state.email,
+                onValueChange = { handleEvents(RestPasswordContract.Event.UpdateEmail(it)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
             SignButtonField(
-                loading = loading,
-                enabled = isEmailValid,
-                resetPasswordClick = resetPasswordClick,
+                loading = state.loading,
+                enabled = state.isEmailValid,
+                resetPasswordClick = { handleEvents(RestPasswordContract.Event.ResetPassword) },
             )
         }
     }
@@ -139,24 +130,6 @@ private fun SignButtonField(
         ) {
             Text(text = "Reset Password")
         }
-    }
-}
-
-@Preview
-@Composable
-private fun ForgetPasswordContentPrev() {
-    WanderPediaTheme {
-        RestPasswordContent(
-            email = "",
-            showDislodge = false,
-            onConfirmClick = {},
-            onNavigateBack = {},
-            onDismissRequest = {},
-            onEmailChange = {},
-            isEmailValid = false,
-            loading = false,
-            resetPasswordClick = {},
-        )
     }
 }
 

@@ -3,7 +3,6 @@ package com.example.wanderpedia.features.auth.ui.signup
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.auth.domain.usecase.SignUpWithEmailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +22,7 @@ class SignUpViewModel @Inject constructor(
             is SignUpContract.Event.UpdateEmail -> setState { copy(email = event.email) }
             is SignUpContract.Event.UpdateLoading -> setState { copy(loading = event.loading) }
             is SignUpContract.Event.UpdatePassword -> setState { copy(password = event.password) }
-            is SignUpContract.Event.UpdatePasswordVisibility -> setState { copy(isPasswordVisible = event.isVisible) }
+            is SignUpContract.Event.TogglePasswordVisibility -> setState { copy(isPasswordVisible = isPasswordVisible.not()) }
             SignUpContract.Event.SignInWithEmail -> signUpWithEmail()
             SignUpContract.Event.NavigateBack -> setEffect { SignUpContract.Effect.NavigateBack }
             SignUpContract.Event.NavigateNext -> setEffect { SignUpContract.Effect.NavigateNext }
@@ -32,7 +31,7 @@ class SignUpViewModel @Inject constructor(
 
     fun signUpWithEmail() {
         viewModelScope.launch(ioDispatcher) {
-            setState { copy(loading = true) }
+
 
             val emailSupportingText = getEmailSupportingText(state.value.email)
             if (emailSupportingText.isNotEmpty()) {
@@ -45,18 +44,10 @@ class SignUpViewModel @Inject constructor(
                 return@launch
             }
 
-            val result = signUpWithEmailUseCase(
-                state.value.email,
-                state.value.password
-            )
-            when (result) {
-                is Resource.Error -> setEffect {
-                    SignUpContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty())
-                }
-
-                is Resource.Success -> setState {
-                    copy(showDialog = true)
-                }
+            setState { copy(loading = true) }
+            signUpWithEmailUseCase(state.value.email, state.value.password).apply {
+                fold(onSuccess = { setState { copy(showDialog = true) } },
+                    onFailure = { SignUpContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) })
             }
             setState { copy(loading = false) }
         }
@@ -71,8 +62,7 @@ private fun getPasswordSupportingText(password: String): String {
             "Password must contain at least one uppercase letter"
         } else if (it.none { it.isDigit() }) {
             "Password must contain at least one digit"
-        } else
-            ""
+        } else ""
     }
 }
 

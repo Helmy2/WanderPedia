@@ -2,7 +2,6 @@ package com.example.wanderpedia.core.data.source.local
 
 import com.example.wanderpedia.core.data.source.local.dao.WonderDao
 import com.example.wanderpedia.core.data.source.local.model.CachedWonder
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class LocalManagerImpl @Inject constructor(
@@ -16,7 +15,7 @@ class LocalManagerImpl @Inject constructor(
         wonderDao.insertWonders(wonders)
     }
 
-    override fun getAllWonders(): Flow<List<CachedWonder>> {
+    override fun getAllWonders(): List<CachedWonder> {
         return wonderDao.getAllWonders()
     }
 
@@ -24,7 +23,7 @@ class LocalManagerImpl @Inject constructor(
         return wonderDao.getWonderById(id)
     }
 
-    override fun getWonderByCategory(category: String): Flow<List<CachedWonder>> {
+    override fun getWonderByCategory(category: String): List<CachedWonder> {
         return wonderDao.getWonderByCategory(category)
     }
 
@@ -32,7 +31,7 @@ class LocalManagerImpl @Inject constructor(
         textQuery: String?,
         timePeriodQuery: String?,
         categoryQuery: String?
-    ): Flow<List<CachedWonder>> {
+    ): List<CachedWonder> {
         return wonderDao.getWondersBy(
             textQuery = textQuery,
             timePeriodQuery = timePeriodQuery,

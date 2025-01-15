@@ -21,7 +21,7 @@ object SignUpContract {
         data class UpdateLoading(val loading: Boolean) : Event()
         data class UpdateEmail(val email: String) : Event()
         data class UpdatePassword(val password: String) : Event()
-        data class UpdatePasswordVisibility(val isVisible: Boolean) : Event()
+        data object TogglePasswordVisibility : Event()
         data object SignInWithEmail : Event()
         data object NavigateNext : Event()
         data object NavigateBack : Event()

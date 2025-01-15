@@ -6,7 +6,7 @@ import com.example.wanderpedia.core.ui.ViewEffect
 import com.example.wanderpedia.core.ui.ViewEvent
 import com.example.wanderpedia.core.ui.ViewState
 
-class ProfileContract {
+object ProfileContract {
     data class State(
         val loading: Boolean = false,
         val showEditeDialog: Boolean = false,

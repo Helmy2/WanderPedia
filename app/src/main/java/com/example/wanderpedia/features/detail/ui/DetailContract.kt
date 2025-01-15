@@ -5,7 +5,7 @@ import com.example.wanderpedia.core.ui.ViewEffect
 import com.example.wanderpedia.core.ui.ViewEvent
 import com.example.wanderpedia.core.ui.ViewState
 
-class DetailContract {
+object DetailContract {
     data class State(
         val loading: Boolean = true,
         val wonder: WonderWithDigitalis? = null

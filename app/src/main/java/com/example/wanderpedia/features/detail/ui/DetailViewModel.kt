@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.wanderpedia.core.di.IoDispatcher
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.detail.domain.usecase.GetWonderByIdUseCase
 import com.example.wanderpedia.main.AppDestinations
@@ -36,11 +35,15 @@ class DetailViewModel @Inject constructor(
     private fun loadWonder(wonderId: String) {
         viewModelScope.launch(ioDispatcher) {
             setState { copy(loading = true) }
-            when (val result = getWonderByIdUseCase(wonderId)) {
-                is Resource.Success -> setState { copy(wonder = result.data) }
-                is Resource.Error -> {
-                    setEffect { DetailContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                }
+            getWonderByIdUseCase(wonderId).apply {
+                fold(
+                    onSuccess = {
+                        setState { copy(wonder = it) }
+                    },
+                    onFailure = {
+                        setEffect { DetailContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) }
+                    },
+                )
             }
             setState { copy(loading = false) }
         }

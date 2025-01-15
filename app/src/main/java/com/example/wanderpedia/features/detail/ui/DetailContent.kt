@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultAppBar
 import com.example.wanderpedia.core.ui.component.DefaultAsyncImage
@@ -40,17 +39,16 @@ import com.example.wanderpedia.core.ui.component.placeholder
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun DetailContent(
-    wonder: WonderWithDigitalis?,
-    loading: Boolean,
+    state: DetailContract.State,
+    handleEvents: (DetailContract.Event) -> Unit,
     modifier: Modifier = Modifier,
-    navigateBack: () -> Unit,
     transitionScope: SharedTransitionScope,
-    contentScope: AnimatedContentScope
+    contentScope: AnimatedContentScope,
 ) {
-    AnimatedContent(wonder, modifier = modifier) { wonder ->
+    AnimatedContent(state.wonder, modifier = modifier) { wonder ->
         if (wonder == null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (loading) {
+                if (state.loading) {
                     CircularProgressIndicator()
                 } else {
                     Text(text = "Something went wrong")
@@ -70,7 +68,7 @@ fun DetailContent(
                     ) {
                         ImageSlider(
                             list = wonder.images,
-                            loading = loading,
+                            loading = state.loading,
                             contentPadding = PaddingValues(horizontal = 32.dp),
                             modifier = Modifier.height(200.dp),
                             itemModifier = Modifier.fillMaxWidth(),
@@ -79,7 +77,7 @@ fun DetailContent(
                             transitionScope = transitionScope,
                             contentScope = contentScope,
                             leadingContent = {
-                                BackButton(onClick = navigateBack)
+                                BackButton(onClick = { handleEvents(DetailContract.Event.NavigateBack) })
                             },
                         )
                     }

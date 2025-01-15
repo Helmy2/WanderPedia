@@ -31,27 +31,7 @@ fun SignUpScreen(
     }
 
     SignUpContent(
-        email = state.email,
-        password = state.password,
-        loading = state.loading,
-        showDialog = state.showDialog,
-        isPasswordVisible = state.isPasswordVisible,
-        isValuedEmail = state.emailSupportingText.isEmpty(),
-        isValuedPassword = state.passwordSupportingText.isEmpty(),
-        passwordSupportingText = state.passwordSupportingText,
-        emailSupportingText = state.emailSupportingText,
-        onBackClick = { viewModel.handleEvents(SignUpContract.Event.NavigateBack) },
-        onEmailChange = { viewModel.handleEvents(SignUpContract.Event.UpdateEmail(it)) },
-        onPasswordChange = { viewModel.handleEvents(SignUpContract.Event.UpdatePassword(it)) },
-        onSignWithEmailInClick = { viewModel.handleEvents(SignUpContract.Event.SignInWithEmail) },
-        onConfirmClick = { viewModel.handleEvents(SignUpContract.Event.NavigateNext) },
-        onDismissDialog = { viewModel.handleEvents(SignUpContract.Event.NavigateBack) },
-        onPasswordHiddenClick = {
-            viewModel.handleEvents(
-                SignUpContract.Event.UpdatePasswordVisibility(
-                    it
-                )
-            )
-        },
+        state = state,
+        handleEvent = viewModel::setEvent,
     )
 }

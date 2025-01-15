@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.wanderpedia.core.data.source.local.model.CachedWonder
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WonderDao {
@@ -17,13 +16,13 @@ interface WonderDao {
     suspend fun insertWonders(wonders: List<CachedWonder>)
 
     @Query("SELECT * FROM cached_wonders")
-    fun getAllWonders(): Flow<List<CachedWonder>>
+    fun getAllWonders(): List<CachedWonder>
 
     @Query("SELECT * FROM cached_wonders WHERE id = :id")
     suspend fun getWonderById(id: String): CachedWonder?
 
     @Query("SELECT * FROM cached_wonders WHERE (categories) LIKE '%' || :category || '%'")
-    fun getWonderByCategory(category: String): Flow<List<CachedWonder>>
+    fun getWonderByCategory(category: String): List<CachedWonder>
 
     @Query(
         """
@@ -40,5 +39,5 @@ interface WonderDao {
         textQuery: String?,
         timePeriodQuery: String?,
         categoryQuery: String?
-    ): Flow<List<CachedWonder>>
+    ): List<CachedWonder>
 }

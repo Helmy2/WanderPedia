@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.example.wanderpedia.R
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.repository.CredentialRepository
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -12,8 +11,8 @@ import javax.inject.Inject
 
 class GoogleCredentialRepositoryImpl @Inject constructor() : CredentialRepository {
 
-    override suspend fun createGoogleCredential(context: Context): Resource<GoogleIdTokenCredential> {
-        return try {
+    override suspend fun createGoogleCredential(context: Context): Result<GoogleIdTokenCredential> =
+        runCatching {
             val signInWithGoogleOption = GetSignInWithGoogleOption
                 .Builder(serverClientId = context.getString(R.string.default_web_client_id))
                 .build()
@@ -27,10 +26,6 @@ class GoogleCredentialRepositoryImpl @Inject constructor() : CredentialRepositor
                 context = context
             )
 
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
-            Resource.Success(googleIdTokenCredential)
-        } catch (e: Exception) {
-            Resource.Error(e)
+            GoogleIdTokenCredential.createFrom(result.credential.data)
         }
-    }
 }

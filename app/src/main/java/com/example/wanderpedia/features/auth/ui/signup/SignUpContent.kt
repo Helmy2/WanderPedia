@@ -1,5 +1,6 @@
 package com.example.wanderpedia.features.auth.ui.signup
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,34 +35,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultButton
 import com.example.wanderpedia.core.ui.component.DefaultDialog
 import com.example.wanderpedia.core.ui.component.DefaultTextField
-import com.example.wanderpedia.core.ui.theme.WanderPediaTheme
 
 
 @Composable
 fun SignUpContent(
-    email: String,
-    password: String,
-    loading: Boolean,
-    showDialog: Boolean,
-    isPasswordVisible: Boolean,
-    isValuedEmail: Boolean,
-    isValuedPassword: Boolean,
-    passwordSupportingText: String,
-    emailSupportingText: String,
+    state: SignUpContract.State,
+    handleEvent: (SignUpContract.Event) -> Unit,
     modifier: Modifier = Modifier,
-    onDismissDialog: () -> Unit,
-    onBackClick: () -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onPasswordHiddenClick: (Boolean) -> Unit,
-    onSignWithEmailInClick: () -> Unit,
-    onConfirmClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -71,13 +56,13 @@ fun SignUpContent(
     ) {
 
         DialogField(
-            showDialog = showDialog,
-            onConfirmClick = onConfirmClick,
-            onDismissRequest = onDismissDialog,
+            showDialog = state.showDialog,
+            onConfirmClick = { handleEvent(SignUpContract.Event.NavigateNext) },
+            onDismissRequest = { handleEvent(SignUpContract.Event.NavigateBack) },
         )
 
         BackButton(
-            onClick = onBackClick,
+            onClick = { handleEvent(SignUpContract.Event.NavigateBack) },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(32.dp)
@@ -93,27 +78,30 @@ fun SignUpContent(
             TitleField(modifier = Modifier.padding(8.dp))
             Spacer(modifier = Modifier.height(8.dp))
             EmailField(
-                email = email,
-                onValueChange = onEmailChange,
-                isValuedEmail = isValuedEmail,
-                supportingText = { Text(text = emailSupportingText) },
+                email = state.email,
+                onValueChange = { handleEvent(SignUpContract.Event.UpdateEmail(it)) },
+                isValuedEmail = state.emailSupportingText.isEmpty(),
+                supportingText = { Text(text = state.emailSupportingText) },
                 modifier = Modifier.fillMaxWidth(),
             )
             PasswordField(
-                password = password,
-                onValueChange = onPasswordChange,
-                isHidden = !isPasswordVisible,
-                onIsHiddenChange = onPasswordHiddenClick,
-                isValuedPassword = isValuedPassword,
-                supportingText = { Text(text = passwordSupportingText) },
+                password = state.password,
+                onValueChange = { handleEvent(SignUpContract.Event.UpdatePassword(it)) },
+                isHidden = !state.isPasswordVisible,
+                toggleVisibility = {
+                    Log.d("TAG", "SignUpContent: $")
+                    handleEvent(SignUpContract.Event.TogglePasswordVisibility)
+                },
+                isValuedPassword = state.passwordSupportingText.isEmpty(),
+                supportingText = { Text(text = state.passwordSupportingText) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(16.dp))
             SignButtonField(
-                loading = loading,
-                onSignWithEmailInClick = onSignWithEmailInClick,
+                loading = state.loading,
+                onSignWithEmailInClick = { handleEvent(SignUpContract.Event.NavigateNext) },
             )
-            SignInField(onClick = onBackClick)
+            SignInField(onClick = { handleEvent(SignUpContract.Event.NavigateBack) })
         }
     }
 }
@@ -142,31 +130,6 @@ private fun SignButtonField(
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-private fun SignUpContentPrev() {
-    WanderPediaTheme {
-        SignUpContent(
-            email = "",
-            password = "",
-            loading = false,
-            showDialog = false,
-            isPasswordVisible = false,
-            isValuedEmail = false,
-            isValuedPassword = false,
-            passwordSupportingText = "",
-            emailSupportingText = "",
-            onDismissDialog = {},
-            onBackClick = {},
-            onEmailChange = {},
-            onPasswordChange = {},
-            onPasswordHiddenClick = {},
-            onSignWithEmailInClick = {},
-            onConfirmClick = {}
-        )
-    }
-}
-
 
 @Composable
 private fun PasswordField(
@@ -174,7 +137,7 @@ private fun PasswordField(
     isHidden: Boolean,
     isValuedPassword: Boolean,
     onValueChange: (String) -> Unit,
-    onIsHiddenChange: (Boolean) -> Unit,
+    toggleVisibility: () -> Unit,
     supportingText: @Composable (() -> Unit)?,
     modifier: Modifier = Modifier.Companion
 ) {
@@ -189,7 +152,7 @@ private fun PasswordField(
             imeAction = ImeAction.Companion.Done, keyboardType = KeyboardType.Companion.Password
         ),
         trailingIcon = {
-            IconButton(onClick = { onIsHiddenChange(!isHidden) }) {
+            IconButton(onClick = toggleVisibility) {
                 Icon(
                     imageVector = if (isHidden) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     contentDescription = if (isHidden) "Show password" else "Hide password"

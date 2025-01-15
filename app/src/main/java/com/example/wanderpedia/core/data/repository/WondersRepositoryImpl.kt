@@ -9,17 +9,11 @@ import com.example.wanderpedia.core.data.source.remote.RemoteManager
 import com.example.wanderpedia.core.data.source.remote.model.toCached
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
-import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
-import com.example.wanderpedia.core.domain.model.safeResource
 import com.example.wanderpedia.core.domain.model.toCached
 import com.example.wanderpedia.core.domain.repository.WondersRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -29,34 +23,35 @@ class WondersRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : WondersRepository {
 
-    override suspend fun refreshAllWonders(): Resource<Unit> = safeResource {
-        // Fetch data from API
-        val result = apiService.getAllWonders()
-        val wonders = result.map { it.toCached() }
-        // Cache the data
-        localManager.insertWonders(wonders)
+    override suspend fun refreshAllWonders(): Result<Unit> = withContext(ioDispatcher) {
+        runCatching {
+            // Fetch data from API
+            val result = apiService.getAllWonders()
+            val wonders = result.map { it.toCached() }
+            // Cache the data
+            localManager.insertWonders(wonders)
+        }
     }
 
-    override fun getAllWonders(): Flow<Resource<List<Wonder>>> =
-        localManager.getAllWonders().map { cachedWonders ->
-            if (cachedWonders.isNotEmpty()) {
-                Resource.Success(cachedWonders.map { it.toDomainWonder() })
+
+    override suspend fun getAllWonders(): Result<List<Wonder>> = withContext(ioDispatcher) {
+        runCatching {
+            val result = localManager.getAllWonders()
+            if (result.isNotEmpty()) {
+                result.map { it.toDomainWonder() }
             } else {
-                // Fetch data from API
                 val result = apiService.getAllWonders()
                 val wonders = result.map { it.toCached() }
                 // Cache the data
                 localManager.insertWonders(wonders)
-                Resource.Success(wonders.map { it.toDomainWonder() })
+                wonders.map { it.toDomainWonder() }
             }
-        }.catch {
-            Resource.Error(it)
-        }.flowOn(ioDispatcher)
+        }
+    }
 
-
-    override suspend fun getWonderById(id: String): Resource<WonderWithDigitalis> =
+    override suspend fun getWonderById(id: String): Result<WonderWithDigitalis> =
         withContext(ioDispatcher) {
-            safeResource {
+            runCatching {
                 // Check if data is cached
                 val cachedWonder = localManager.getWonderById(id)
                 if (cachedWonder != null) {
@@ -74,35 +69,34 @@ class WondersRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun getWondersByCategory(category: Category): Flow<Resource<List<Wonder>>> =
-        localManager.getWonderByCategory(category.toCached()?.name ?: Category.Unknown.name)
-            .map { cachedWonders ->
-                if (cachedWonders.isNotEmpty()) {
-                    Resource.Success(cachedWonders.map { it.toDomainWonder() })
+    override suspend fun getWondersByCategory(category: Category): Result<List<Wonder>> =
+        withContext(ioDispatcher) {
+            runCatching {
+                val result = localManager.getWonderByCategory(
+                    category.toCached()?.name ?: Category.Unknown.name
+                )
+                if (result.isNotEmpty()) {
+                    result.map { it.toDomainWonder() }
                 } else {
-                    // Fetch data from API
                     val result = apiService.getWondersByCategory(
                         category.toCached()?.name ?: Category.Unknown.name
                     )
                     val wonders = result.map { it.toCached() }
                     // Cache the data
                     localManager.insertWonders(wonders)
-                    Resource.Success(wonders.map { it.toDomainWonder() })
+                    wonders.map { it.toDomainWonder() }
                 }
-            }.catch {
-                Resource.Error(it)
-            }.flowOn(ioDispatcher)
+            }
+        }
 
-
-    override fun getWondersBy(
+    override suspend fun getWondersBy(
         textQuery: String?, timePeriodQuery: CachedTimePeriod?, categoryQuery: CachedCategory?
-    ): Flow<Resource<List<Wonder>>> = localManager.getWondersBy(
-        textQuery = textQuery,
-        timePeriodQuery = timePeriodQuery?.name,
-        categoryQuery = categoryQuery?.name
-    ).map { cachedWonders ->
-        Resource.Success(cachedWonders.map { it.toDomainWonder() })
-    }.catch {
-        Resource.Error(it)
-    }.flowOn(ioDispatcher)
+    ): Result<List<Wonder>> = withContext(ioDispatcher) {
+        runCatching {
+            val result = localManager.getWondersBy(
+                textQuery, timePeriodQuery?.name, categoryQuery?.name
+            )
+            result.map { it.toDomainWonder() }
+        }
+    }
 }
