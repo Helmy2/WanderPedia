@@ -1,16 +1,14 @@
-package com.example.wanderpedia
+package com.example.wanderpedia.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wanderpedia.core.ui.theme.WanderPediaTheme
-import com.example.wanderpedia.navigation.WonderNav
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,13 +17,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val splashScreen = installSplashScreen()
+        val viewModel: MainViewModel by viewModels()
+
+        splashScreen.setKeepOnScreenCondition {
+            viewModel.showOnboarding.value == null
+        }
+
         setContent {
-            var isReady by rememberSaveable {
-                mutableStateOf(false)
-            }
-            splashScreen.setKeepOnScreenCondition { !isReady }
+            val isShowOnboarding by viewModel.showOnboarding.collectAsStateWithLifecycle()
+
             WanderPediaTheme {
-                WonderNav { isReady = true }
+                if (isShowOnboarding != null) {
+                    WonderNav(showOnboarding = isShowOnboarding!!)
+                }
             }
         }
     }

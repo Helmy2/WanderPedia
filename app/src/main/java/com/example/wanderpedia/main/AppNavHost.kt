@@ -1,4 +1,4 @@
-package com.example.wanderpedia.navigation
+package com.example.wanderpedia.main
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout

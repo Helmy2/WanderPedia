@@ -7,7 +7,7 @@ import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.detail.domain.usecase.GetWonderByIdUseCase
-import com.example.wanderpedia.navigation.AppDestinations
+import com.example.wanderpedia.main.AppDestinations
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch

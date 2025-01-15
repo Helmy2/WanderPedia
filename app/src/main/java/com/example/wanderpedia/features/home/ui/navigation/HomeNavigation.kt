@@ -5,7 +5,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.wanderpedia.features.home.ui.HomeScreen
-import com.example.wanderpedia.navigation.AppDestinations
+import com.example.wanderpedia.main.AppDestinations
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.homeNavigation(

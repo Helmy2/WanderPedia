@@ -22,24 +22,19 @@ fun DefaultAppBar(
 ) {
     with(transitionScope) {
         Row(
-            modifier.fillMaxWidth(),
+            modifier
+                .fillMaxWidth()
+                .sharedElement(
+                    state = transitionScope.rememberSharedContentState(key = "app-bar"),
+                    animatedVisibilityScope = contentScope,
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier.sharedElement(
-                    state = transitionScope.rememberSharedContentState(key = "leading-app-bar"),
-                    animatedVisibilityScope = contentScope,
-                )
-            ) {
+            Box {
                 leadingContent.invoke()
             }
-            Box(
-                modifier = Modifier.sharedElement(
-                    state = transitionScope.rememberSharedContentState(key = "trailing-app-bar"),
-                    animatedVisibilityScope = contentScope
-                )
-            ) {
+            Box {
                 trailingContent.invoke()
             }
         }

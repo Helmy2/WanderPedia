@@ -8,7 +8,7 @@ import androidx.navigation.navigation
 import com.example.wanderpedia.features.auth.ui.resetpassword.RestPasswordScreen
 import com.example.wanderpedia.features.auth.ui.signin.SignInScreen
 import com.example.wanderpedia.features.auth.ui.signup.SignUpScreen
-import com.example.wanderpedia.navigation.AppDestinations
+import com.example.wanderpedia.main.AppDestinations
 import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.authNavigation(
@@ -36,7 +36,7 @@ fun NavGraphBuilder.authNavigation(
                 navController.popBackStack()
             },
             onComplete = {
-                navController.popBackStack()
+                navController.navigate(AppDestinations.Home)
             }
         )
 

@@ -11,7 +11,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.wanderpedia.navigation.AppDestinations
+import com.example.wanderpedia.main.AppDestinations
 
 
 data class TopLevelRoute(

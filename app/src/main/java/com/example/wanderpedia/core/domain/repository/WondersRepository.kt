@@ -10,11 +10,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface WondersRepository {
     suspend fun getWonderById(id: String): Resource<WonderWithDigitalis>
+    suspend fun refreshAllWonders(): Resource<Unit>
     fun getAllWonders(): Flow<Resource<List<Wonder>>>
     fun getWondersByCategory(category: Category): Flow<Resource<List<Wonder>>>
     fun getWondersBy(
-        textQuery: String?,
-        timePeriodQuery: CachedTimePeriod?,
-        categoryQuery: CachedCategory?
+        textQuery: String?, timePeriodQuery: CachedTimePeriod?, categoryQuery: CachedCategory?
     ): Flow<Resource<List<Wonder>>>
 }

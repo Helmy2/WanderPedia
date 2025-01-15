@@ -17,8 +17,11 @@ fun DefaultButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    containerColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    isPrimary: Boolean = false,
+    containerColor: Color = if (isPrimary) MaterialTheme.colorScheme.primary
+    else MaterialTheme.colorScheme.secondaryContainer,
+    contentColor: Color = if (isPrimary) MaterialTheme.colorScheme.onPrimary
+    else MaterialTheme.colorScheme.onSecondaryContainer,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(

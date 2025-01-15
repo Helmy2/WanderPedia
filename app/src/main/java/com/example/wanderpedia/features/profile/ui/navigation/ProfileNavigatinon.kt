@@ -3,7 +3,7 @@ package com.example.wanderpedia.features.profile.ui.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.wanderpedia.features.profile.ui.ProfileScreen
-import com.example.wanderpedia.navigation.AppDestinations
+import com.example.wanderpedia.main.AppDestinations
 
 fun NavGraphBuilder.profileNavigation(
     navigateToLogin: () -> Unit,

@@ -3,6 +3,7 @@ package com.example.wanderpedia.features.home.ui
 import androidx.lifecycle.viewModelScope
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
+import com.example.wanderpedia.core.domain.model.Resource
 import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.domain.model.handleResource
 import com.example.wanderpedia.core.domain.usecase.GetCurrentUserFlowUseCase
@@ -10,6 +11,9 @@ import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.home.domain.usecase.GetWondersByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,24 +39,41 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchInitialData() {
         setState { copy(loading = true) }
-
         viewModelScope.launch(ioDispatcher) {
-            val ancientWondersJob = launch {
-                fetchDataForCategory(Category.AncientWonders) {
-                    setState { copy(ancientWonders = it) }
-                }
+            val ancientWondersDeferred = async { fetchWondersByCategory(Category.AncientWonders) }
+            val modernWondersDeferred = async { fetchWondersByCategory(Category.ModernWonders) }
+
+            val ancientWonders = ancientWondersDeferred.await()
+            val modernWonders = modernWondersDeferred.await()
+
+            setState {
+                copy(
+                    ancientWonders = WonderList(Category.AncientWonders, ancientWonders),
+                    modernWonders = WonderList(Category.ModernWonders, modernWonders),
+                    loading = false
+                )
             }
-            val modernWondersJob = launch {
-                fetchDataForCategory(Category.ModernWonders) {
-                    setState { copy(modernWonders = it) }
+        }
+    }
+
+    private suspend fun fetchWondersByCategory(category: Category): List<Wonder> {
+        val result = getWondersByCategoryUseCase(category).firstOrNull()
+        when (result) {
+            is Resource.Error -> {
+                setEffect {
+                    HomeContract.Effect.ShowErrorToast(
+                        result.exception?.message ?: "Unknown error"
+                    )
                 }
             }
 
-            // Wait for both jobs to complete before setting loading to false
-            ancientWondersJob.join()
-            modernWondersJob.join()
-            setState { copy(loading = false) }
+            is Resource.Success -> return result.data
+            null -> {
+                delay(1000)
+                fetchInitialData()
+            }
         }
+        return emptyList()
     }
 
     private fun observeCurrentUser() {
@@ -60,26 +81,6 @@ class HomeViewModel @Inject constructor(
             getCurrentUserFlowUseCase().collect { resource ->
                 resource.handleResource(
                     onSuccess = { user -> setState { copy(user = user) } },
-                    onError = { errorMessage ->
-                        setEffect {
-                            HomeContract.Effect.ShowErrorToast(
-                                errorMessage
-                            )
-                        }
-                    }
-                )
-            }
-        }
-    }
-
-    private fun fetchDataForCategory(
-        category: Category,
-        updateStateWithData: (WonderList) -> Unit
-    ) {
-        viewModelScope.launch(ioDispatcher) {
-            getWondersByCategoryUseCase(category).collect { resource ->
-                resource.handleResource(
-                    onSuccess = { data -> updateStateWithData(WonderList(category, data)) },
                     onError = { errorMessage ->
                         setEffect {
                             HomeContract.Effect.ShowErrorToast(

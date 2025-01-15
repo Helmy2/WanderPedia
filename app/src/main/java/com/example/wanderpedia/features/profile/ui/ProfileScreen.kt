@@ -23,6 +23,12 @@ fun ProfileScreen(
                     event = SnackbarEvent(it.message)
                 )
             }
+
+            is ProfileContract.Effect.ShowSuccessToast -> {
+                SnackbarController.sendEvent(
+                    event = SnackbarEvent(it.message)
+                )
+            }
         }
     }
 

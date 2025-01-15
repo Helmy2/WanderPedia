@@ -9,6 +9,7 @@ import com.example.wanderpedia.core.domain.usecase.GetGoogleCredentialUseCase
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.profile.domain.usecase.LinkAccountWithGoogleUseCase
 import com.example.wanderpedia.features.profile.domain.usecase.LogoutUseCase
+import com.example.wanderpedia.features.profile.domain.usecase.UpdateDisplayNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -20,6 +21,7 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val linkAccountWithGoogleUseCase: LinkAccountWithGoogleUseCase,
     private val credentialUseCase: GetGoogleCredentialUseCase,
+    private val updateDisplayNameUseCase: UpdateDisplayNameUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<ProfileContract.State, ProfileContract.Event, ProfileContract.Effect>(
     ProfileContract.State()
@@ -31,9 +33,23 @@ class ProfileViewModel @Inject constructor(
 
     override fun handleEvents(event: ProfileContract.Event) {
         when (event) {
-            ProfileContract.Event.Logout -> logout()
-            ProfileContract.Event.NavigateToLogin -> setEffect { ProfileContract.Effect.NavigateToLogin }
+            is ProfileContract.Event.Logout -> logout()
+            is ProfileContract.Event.NavigateToLogin -> setEffect { ProfileContract.Effect.NavigateToLogin }
             is ProfileContract.Event.LinkToGoogleAccount -> linkToGoogleAccount(event.context)
+            is ProfileContract.Event.UpdateDialogState -> setState { copy(showEditeDialog = event.show) }
+            is ProfileContract.Event.UpdateUserName -> updateDisplayName(event.name)
+        }
+    }
+
+    private fun updateDisplayName(string: String) {
+        viewModelScope.launch(ioDispatcher) {
+            setState { copy(loading = true) }
+            val result = updateDisplayNameUseCase(string)
+            when (result) {
+                is Resource.Error -> setEffect { ProfileContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
+                is Resource.Success -> setEffect { ProfileContract.Effect.ShowSuccessToast("Display name updated successfully") }
+            }
+            setState { copy(loading = false) }
         }
     }
 
@@ -59,7 +75,7 @@ class ProfileViewModel @Inject constructor(
             val result = logoutUseCase()
             when (result) {
                 is Resource.Error -> setEffect { ProfileContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                is Resource.Success -> {}
+                is Resource.Success -> setEffect { ProfileContract.Effect.ShowSuccessToast("Logout successfully") }
             }
             setState { copy(loading = false) }
         }
@@ -76,7 +92,7 @@ class ProfileViewModel @Inject constructor(
             }
             when (result) {
                 is Resource.Error -> setEffect { ProfileContract.Effect.ShowErrorToast(result.exception?.localizedMessage.orEmpty()) }
-                is Resource.Success -> {}
+                is Resource.Success -> setEffect { ProfileContract.Effect.ShowSuccessToast("Account linked successfully") }
             }
 
             setState { copy(loading = false) }

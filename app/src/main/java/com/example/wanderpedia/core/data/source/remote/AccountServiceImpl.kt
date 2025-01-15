@@ -7,9 +7,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.userProfileChangeRequest
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -17,22 +16,31 @@ import javax.inject.Inject
 class AccountServiceImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : AccountService {
+    private val _currentUserFlow = MutableSharedFlow<User?>(replay = 1)
+
     override val currentUser: Flow<User?>
-        get() = callbackFlow {
-            firebaseAuth.addAuthStateListener { auth ->
-                trySend(auth.currentUser?.toUser())
-            }
-            awaitClose {
-                firebaseAuth.removeAuthStateListener { auth ->
-                    trySend(auth.currentUser?.toUser())
-                }
-            }
-        }.onStart {
-            emit(firebaseAuth.currentUser?.toUser())
+        get() = _currentUserFlow.onStart {
+            notifyProfileUpdated()
         }
 
     override suspend fun createAnonymousAccount() {
         firebaseAuth.signInAnonymously().await()
+    }
+
+    init {
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            notifyProfileUpdated()
+        }
+        firebaseAuth.addAuthStateListener(authStateListener)
+
+        // Optional: Clean up the listener when this service is no longer needed
+        Runtime.getRuntime().addShutdownHook(Thread {
+            firebaseAuth.removeAuthStateListener(authStateListener)
+        })
+    }
+
+    private fun notifyProfileUpdated() {
+        _currentUserFlow.tryEmit(firebaseAuth.currentUser?.toUser())
     }
 
     override suspend fun updateDisplayName(
@@ -43,6 +51,7 @@ class AccountServiceImpl @Inject constructor(
         }
 
         getCurrentUser().updateProfile(profileUpdates).await()
+        notifyProfileUpdated()
     }
 
 
@@ -51,10 +60,7 @@ class AccountServiceImpl @Inject constructor(
     ) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         getCurrentUser().linkWithCredential(credential).await()
-        // Sign the user out of their current Anonymous account.
-        // Sign the user back in with their Google account.
-        firebaseAuth.signOut()
-        signInWithGoogle(idToken)
+        notifyProfileUpdated()
     }
 
     override suspend fun linkAccountWithEmail(
@@ -62,6 +68,7 @@ class AccountServiceImpl @Inject constructor(
     ) {
         val credential = EmailAuthProvider.getCredential(email, password)
         getCurrentUser().linkWithCredential(credential).await()
+        notifyProfileUpdated()
     }
 
 

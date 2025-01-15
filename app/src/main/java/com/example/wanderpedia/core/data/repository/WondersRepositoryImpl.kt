@@ -29,6 +29,14 @@ class WondersRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : WondersRepository {
 
+    override suspend fun refreshAllWonders(): Resource<Unit> = safeResource {
+        // Fetch data from API
+        val result = apiService.getAllWonders()
+        val wonders = result.map { it.toCached() }
+        // Cache the data
+        localManager.insertWonders(wonders)
+    }
+
     override fun getAllWonders(): Flow<Resource<List<Wonder>>> =
         localManager.getAllWonders().map { cachedWonders ->
             if (cachedWonders.isNotEmpty()) {
@@ -87,9 +95,7 @@ class WondersRepositoryImpl @Inject constructor(
 
 
     override fun getWondersBy(
-        textQuery: String?,
-        timePeriodQuery: CachedTimePeriod?,
-        categoryQuery: CachedCategory?
+        textQuery: String?, timePeriodQuery: CachedTimePeriod?, categoryQuery: CachedCategory?
     ): Flow<Resource<List<Wonder>>> = localManager.getWondersBy(
         textQuery = textQuery,
         timePeriodQuery = timePeriodQuery?.name,
