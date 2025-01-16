@@ -1,13 +1,12 @@
-package com.example.wanderpedia.core.data.source.local.model
+package com.example.wanderpedia.core.data.source.local.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.wanderpedia.core.data.source.local.conveter.StringListConverter
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.TimePeriod
 import com.example.wanderpedia.core.domain.model.Wonder
-import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
+import com.example.wanderpedia.core.domain.model.WonderWithDetails
 
 @Entity(tableName = "cached_wonders")
 data class CachedWonder(
@@ -20,10 +19,11 @@ data class CachedWonder(
     val mapLink: String?,
     val tripAdvisorLink: String?,
     val wikiLink: String?,
-    @TypeConverters(StringListConverter::class)
+    @TypeConverters(com.example.wanderpedia.core.data.source.local.database.conveter.StringListConverter::class)
     val images: List<String>,
-    @TypeConverters(StringListConverter::class)
+    @TypeConverters(com.example.wanderpedia.core.data.source.local.database.conveter.StringListConverter::class)
     val categories: List<CachedCategory>,
+    val isFavorite: Boolean
 )
 
 enum class CachedTimePeriod {
@@ -45,8 +45,8 @@ enum class CachedCategory {
     Unknown
 }
 
-fun CachedWonder.toDomainWonderWithDigitalis(): WonderWithDigitalis {
-    return WonderWithDigitalis(
+fun CachedWonder.toDomainWonderWithDigitalis(): WonderWithDetails {
+    return WonderWithDetails(
         id = id,
         buildYear = buildYear ?: 0,
         location = location ?: "Unknown",
@@ -57,6 +57,7 @@ fun CachedWonder.toDomainWonderWithDigitalis(): WonderWithDigitalis {
         tripAdvisorLink = tripAdvisorLink ?: "Unknown",
         wikiLink = wikiLink ?: "Unknown",
         images = images,
+        isFavorite = isFavorite,
         categories = categories.map { it.toDomainWonder() }
     )
 }
@@ -66,6 +67,7 @@ fun CachedWonder.toDomainWonder(): Wonder {
         id = id,
         location = location ?: "Unknown",
         name = name ?: "Unknown",
+        isFavorite = isFavorite,
         imageUrl = images.firstOrNull() ?: "",
     )
 }

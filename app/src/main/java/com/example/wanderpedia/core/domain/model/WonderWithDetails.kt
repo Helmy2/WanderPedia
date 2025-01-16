@@ -1,11 +1,11 @@
 package com.example.wanderpedia.core.domain.model
 
-import com.example.wanderpedia.core.data.source.local.model.CachedCategory
-import com.example.wanderpedia.core.data.source.local.model.CachedTimePeriod
+import com.example.wanderpedia.core.data.source.local.database.model.CachedCategory
+import com.example.wanderpedia.core.data.source.local.database.model.CachedTimePeriod
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WonderWithDigitalis(
+data class WonderWithDetails(
     val id: String,
     val buildYear: Int,
     val location: String,
@@ -17,6 +17,7 @@ data class WonderWithDigitalis(
     val wikiLink: String,
     val images: List<String>,
     val categories: List<Category>,
+    val isFavorite: Boolean,
 )
 
 @Serializable

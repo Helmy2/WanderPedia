@@ -1,6 +1,6 @@
 package com.example.wanderpedia.core.data.source.local
 
-import com.example.wanderpedia.core.data.source.local.model.CachedWonder
+import com.example.wanderpedia.core.data.source.local.database.model.CachedWonder
 
 interface LocalManager {
     suspend fun insertWonder(wonders: CachedWonder)
@@ -13,4 +13,5 @@ interface LocalManager {
         timePeriodQuery: String?,
         categoryQuery: String?
     ): List<CachedWonder>
+    suspend fun updateWonderFavorite(id: String, isFavorite: Boolean)
 }

@@ -8,4 +8,5 @@ data class Wonder(
     val location: String,
     val name: String,
     val imageUrl: String,
+    val isFavorite: Boolean,
 )

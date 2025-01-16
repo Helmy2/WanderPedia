@@ -4,8 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import com.example.wanderpedia.core.data.source.local.LocalManager
 import com.example.wanderpedia.core.data.source.local.LocalManagerImpl
-import com.example.wanderpedia.core.data.source.local.WonderDatabase
-import com.example.wanderpedia.core.data.source.local.dao.WonderDao
+import com.example.wanderpedia.core.data.source.local.database.WonderDatabase
+import com.example.wanderpedia.core.data.source.local.database.dao.WonderDao
+import com.example.wanderpedia.core.data.source.remote.database.FireStoreUserDataSource
+import com.example.wanderpedia.core.data.source.remote.database.RemoteUserDataSource
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,5 +49,16 @@ object DatabaseModule {
     @Provides
     fun provideLocalManager(localManagerImpl: LocalManagerImpl): LocalManager {
         return localManagerImpl
+    }
+
+    @Provides
+    fun provideFireStoreUserDataSource(
+        firestore: FirebaseFirestore,
+        auth: FirebaseAuth,
+    ): RemoteUserDataSource {
+        return FireStoreUserDataSource(
+            firestore,
+            auth
+        )
     }
 }

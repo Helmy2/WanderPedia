@@ -1,4 +1,4 @@
-package com.example.wanderpedia.core.data.source.local.conveter
+package com.example.wanderpedia.core.data.source.local.database.conveter
 
 import android.util.Log
 import androidx.room.TypeConverter

@@ -1,10 +1,10 @@
-package com.example.wanderpedia.core.data.source.local.dao
+package com.example.wanderpedia.core.data.source.local.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.wanderpedia.core.data.source.local.model.CachedWonder
+import com.example.wanderpedia.core.data.source.local.database.model.CachedWonder
 
 @Dao
 interface WonderDao {
@@ -40,4 +40,7 @@ interface WonderDao {
         timePeriodQuery: String?,
         categoryQuery: String?
     ): List<CachedWonder>
+
+    @Query("UPDATE cached_wonders SET isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateWonderFavorite(id: String, isFavorite: Boolean)
 }

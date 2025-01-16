@@ -1,9 +1,9 @@
 package com.example.wanderpedia.core.data.source.remote.model
 
 
-import com.example.wanderpedia.core.data.source.local.model.CachedCategory
-import com.example.wanderpedia.core.data.source.local.model.CachedTimePeriod
-import com.example.wanderpedia.core.data.source.local.model.CachedWonder
+import com.example.wanderpedia.core.data.source.local.database.model.CachedCategory
+import com.example.wanderpedia.core.data.source.local.database.model.CachedTimePeriod
+import com.example.wanderpedia.core.data.source.local.database.model.CachedWonder
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -46,7 +46,7 @@ data class LinksResponse(
     @SerialName("wiki") val wiki: String?
 )
 
-fun WonderResponse.toCached(): CachedWonder {
+fun WonderResponse.toCached(isFavorite: Boolean): CachedWonder {
     return CachedWonder(
         id = name ?: "",
         buildYear = buildYear,
@@ -57,6 +57,7 @@ fun WonderResponse.toCached(): CachedWonder {
         mapLink = links?.googleMaps,
         tripAdvisorLink = links?.tripAdvisor,
         wikiLink = links?.wiki,
+        isFavorite = isFavorite,
         images = links?.images?.filterNotNull().orEmpty(),
         categories = categories?.map { it.toCached() }.orEmpty()
     )

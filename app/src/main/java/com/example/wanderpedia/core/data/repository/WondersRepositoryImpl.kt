@@ -1,16 +1,16 @@
 package com.example.wanderpedia.core.data.repository
 
 import com.example.wanderpedia.core.data.source.local.LocalManager
-import com.example.wanderpedia.core.data.source.local.model.CachedCategory
-import com.example.wanderpedia.core.data.source.local.model.CachedTimePeriod
-import com.example.wanderpedia.core.data.source.local.model.toDomainWonder
-import com.example.wanderpedia.core.data.source.local.model.toDomainWonderWithDigitalis
+import com.example.wanderpedia.core.data.source.local.database.model.CachedCategory
+import com.example.wanderpedia.core.data.source.local.database.model.CachedTimePeriod
+import com.example.wanderpedia.core.data.source.local.database.model.toDomainWonder
+import com.example.wanderpedia.core.data.source.local.database.model.toDomainWonderWithDigitalis
 import com.example.wanderpedia.core.data.source.remote.RemoteManager
 import com.example.wanderpedia.core.data.source.remote.model.toCached
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.Wonder
-import com.example.wanderpedia.core.domain.model.WonderWithDigitalis
+import com.example.wanderpedia.core.domain.model.WonderWithDetails
 import com.example.wanderpedia.core.domain.model.toCached
 import com.example.wanderpedia.core.domain.repository.WondersRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WondersRepositoryImpl @Inject constructor(
-    private val apiService: RemoteManager,
+    private val remoteManager: RemoteManager,
     private val localManager: LocalManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : WondersRepository {
@@ -26,8 +26,10 @@ class WondersRepositoryImpl @Inject constructor(
     override suspend fun refreshAllWonders(): Result<Unit> = withContext(ioDispatcher) {
         runCatching {
             // Fetch data from API
-            val result = apiService.getAllWonders()
-            val wonders = result.map { it.toCached() }
+            val favoriteWonderIds = remoteManager.getFavoriteWondersId()
+            val result = remoteManager.getAllWonders()
+            val wonders =
+                result.map { it.toCached(isFavorite = favoriteWonderIds.contains(it.name)) }
             // Cache the data
             localManager.insertWonders(wonders)
         }
@@ -40,8 +42,10 @@ class WondersRepositoryImpl @Inject constructor(
             if (result.isNotEmpty()) {
                 result.map { it.toDomainWonder() }
             } else {
-                val result = apiService.getAllWonders()
-                val wonders = result.map { it.toCached() }
+                val favoriteWonderIds = remoteManager.getFavoriteWondersId()
+                val result = remoteManager.getAllWonders()
+                val wonders =
+                    result.map { it.toCached(isFavorite = favoriteWonderIds.contains(it.name)) }
                 // Cache the data
                 localManager.insertWonders(wonders)
                 wonders.map { it.toDomainWonder() }
@@ -49,7 +53,7 @@ class WondersRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getWonderById(id: String): Result<WonderWithDigitalis> =
+    override suspend fun getWonderById(id: String): Result<WonderWithDetails> =
         withContext(ioDispatcher) {
             runCatching {
                 // Check if data is cached
@@ -58,8 +62,10 @@ class WondersRepositoryImpl @Inject constructor(
                     cachedWonder.toDomainWonderWithDigitalis()
                 } else {
                     // Fetch data from API
-                    val result = apiService.getWonderByName(id)
-                    val wonder = result.toCached()
+                    val favoriteWonderIds = remoteManager.getFavoriteWondersId()
+
+                    val result = remoteManager.getWonderByName(id)
+                    val wonder = result.toCached(isFavorite = favoriteWonderIds.contains(id))
 
                     // Cache the data
                     localManager.insertWonder(wonder)
@@ -78,10 +84,13 @@ class WondersRepositoryImpl @Inject constructor(
                 if (result.isNotEmpty()) {
                     result.map { it.toDomainWonder() }
                 } else {
-                    val result = apiService.getWondersByCategory(
+                    val favoriteWonderIds = remoteManager.getFavoriteWondersId()
+
+                    val result = remoteManager.getWondersByCategory(
                         category.toCached()?.name ?: Category.Unknown.name
                     )
-                    val wonders = result.map { it.toCached() }
+                    val wonders =
+                        result.map { it.toCached(isFavorite = favoriteWonderIds.contains(it.name)) }
                     // Cache the data
                     localManager.insertWonders(wonders)
                     wonders.map { it.toDomainWonder() }
@@ -99,4 +108,17 @@ class WondersRepositoryImpl @Inject constructor(
             result.map { it.toDomainWonder() }
         }
     }
+
+    override suspend fun updateWonderFavorite(id: String, isFavorite: Boolean): Result<Unit> =
+        withContext(ioDispatcher) {
+            runCatching {
+                if (isFavorite) {
+                    remoteManager.addFavoriteWonder(id)
+                } else {
+                    remoteManager.removeFavoriteWonder(id)
+                }
+
+                localManager.updateWonderFavorite(id, isFavorite)
+            }
+        }
 }

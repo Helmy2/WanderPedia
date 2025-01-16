@@ -1,7 +1,7 @@
 package com.example.wanderpedia.core.data.source.local
 
-import com.example.wanderpedia.core.data.source.local.dao.WonderDao
-import com.example.wanderpedia.core.data.source.local.model.CachedWonder
+import com.example.wanderpedia.core.data.source.local.database.dao.WonderDao
+import com.example.wanderpedia.core.data.source.local.database.model.CachedWonder
 import javax.inject.Inject
 
 class LocalManagerImpl @Inject constructor(
@@ -38,4 +38,9 @@ class LocalManagerImpl @Inject constructor(
             categoryQuery = categoryQuery
         )
     }
+
+    override suspend fun updateWonderFavorite(id: String, isFavorite: Boolean) {
+        wonderDao.updateWonderFavorite(id, isFavorite)
+    }
+
 }
