@@ -19,20 +19,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.ui.component.BackButton
 import com.example.wanderpedia.core.ui.component.DefaultAppBar
 import com.example.wanderpedia.core.ui.component.DefaultAsyncImage
+import com.example.wanderpedia.core.ui.component.DefaultCircleButton
 import com.example.wanderpedia.core.ui.component.carouselTransition
 import com.example.wanderpedia.core.ui.component.placeholder
 
@@ -68,7 +73,6 @@ fun DetailContent(
                     ) {
                         ImageSlider(
                             list = wonder.images,
-                            loading = state.loading,
                             contentPadding = PaddingValues(horizontal = 32.dp),
                             modifier = Modifier.height(200.dp),
                             itemModifier = Modifier.fillMaxWidth(),
@@ -79,6 +83,21 @@ fun DetailContent(
                             leadingContent = {
                                 BackButton(onClick = { handleEvents(DetailContract.Event.NavigateBack) })
                             },
+                            trailingContent = {
+                                DefaultCircleButton(
+                                    onClick = {
+                                        handleEvents(DetailContract.Event.ToggleFavorite)
+                                    },
+                                    modifier = modifier.size(48.dp),
+                                ) {
+                                    Icon(
+                                        imageVector = if (state.isFavorite == true)
+                                            Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                        contentDescription = "Favorite",
+                                        tint = if (state.isFavorite == true) Color.Red else LocalContentColor.current,
+                                    )
+                                }
+                            }
                         )
                     }
 
@@ -140,7 +159,6 @@ fun DetailContent(
 @Composable
 fun ImageSlider(
     list: List<String>,
-    loading: Boolean,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     itemModifier: Modifier = Modifier,
@@ -160,7 +178,7 @@ fun ImageSlider(
         Card(
             modifier = itemModifier
                 .carouselTransition(it, pagerState)
-                .placeholder(loading),
+                .placeholder(list.isEmpty()),
         ) {
             DefaultAsyncImage(
                 imageUrl = list[it % list.size],

@@ -6,6 +6,7 @@ import androidx.navigation.toRoute
 import com.example.wanderpedia.core.di.IoDispatcher
 import com.example.wanderpedia.core.ui.BaseViewModel
 import com.example.wanderpedia.features.detail.domain.usecase.GetWonderByIdUseCase
+import com.example.wanderpedia.features.detail.domain.usecase.UpdateWonderFavoriteUseCase
 import com.example.wanderpedia.main.AppDestinations
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val getWonderByIdUseCase: GetWonderByIdUseCase,
+    private val updateWonderFavoriteUseCase: UpdateWonderFavoriteUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<DetailContract.State, DetailContract.Event, DetailContract.Effect>(
@@ -29,6 +31,7 @@ class DetailViewModel @Inject constructor(
     override fun handleEvents(event: DetailContract.Event) {
         when (event) {
             is DetailContract.Event.NavigateBack -> setEffect { DetailContract.Effect.NavigateBack }
+            DetailContract.Event.ToggleFavorite -> toggleFavorite()
         }
     }
 
@@ -38,7 +41,27 @@ class DetailViewModel @Inject constructor(
             getWonderByIdUseCase(wonderId).apply {
                 fold(
                     onSuccess = {
-                        setState { copy(wonder = it) }
+                        setState { copy(wonder = it, isFavorite = it.isFavorite) }
+                    },
+                    onFailure = {
+                        setEffect { DetailContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) }
+                    },
+                )
+            }
+            setState { copy(loading = false) }
+        }
+    }
+
+    private fun toggleFavorite() {
+        viewModelScope.launch(ioDispatcher) {
+            setState { copy(loading = true) }
+            updateWonderFavoriteUseCase(
+                id = state.value.wonder?.id.orEmpty(),
+                isFavorite = state.value.isFavorite.not()
+            ).apply {
+                fold(
+                    onSuccess = {
+                        setState { copy(isFavorite = isFavorite.not()) }
                     },
                     onFailure = {
                         setEffect { DetailContract.Effect.ShowErrorToast(it.localizedMessage.orEmpty()) }
