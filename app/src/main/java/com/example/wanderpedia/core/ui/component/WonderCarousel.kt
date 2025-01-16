@@ -75,25 +75,25 @@ fun WonderCarousel(
         verticalAlignment = Alignment.CenterVertically,
         beyondViewportPageCount = 1,
     ) {
-        if (wonderList.isNotEmpty()) {
-            val item = wonderList[it % wonderList.size]
-            CarouselItem(
-                id = item.id,
-                name = item.name,
-                imageUrl = item.imageUrl,
-                onClick = { onItemClick(item) },
-                modifier = itemModifier
-                    .carouselTransition(it, pagerState),
-                transitionScope = transitionScope,
-                contentScope = contentScope
-            )
-        } else {
+        if (wonderList.isEmpty()) {
             CarouselItem(
                 loading = true,
                 id = "",
                 name = "",
                 imageUrl = "",
                 onClick = {},
+                modifier = itemModifier
+                    .carouselTransition(it, pagerState),
+                transitionScope = transitionScope,
+                contentScope = contentScope
+            )
+        } else {
+            val item = wonderList[it % wonderList.size]
+            CarouselItem(
+                id = item.id,
+                name = item.name,
+                imageUrl = item.imageUrl,
+                onClick = { onItemClick(item) },
                 modifier = itemModifier
                     .carouselTransition(it, pagerState),
                 transitionScope = transitionScope,
@@ -129,10 +129,12 @@ fun CarouselItem(
     with(transitionScope) {
         Card(
             onClick = onClick,
-            modifier = Modifier.sharedElement(
-                transitionScope.rememberSharedContentState(key = "$id-image"),
-                animatedVisibilityScope = contentScope
-            ) then modifier,
+            modifier = modifier
+                .placeholder(loading)
+                .sharedElement(
+                    transitionScope.rememberSharedContentState(key = "$id-image"),
+                    animatedVisibilityScope = contentScope
+                ),
         ) {
             Box {
                 DefaultAsyncImage(
@@ -140,7 +142,6 @@ fun CarouselItem(
                     contentDescription = name,
                     modifier = Modifier
                         .fillMaxSize()
-                        .placeholder(loading)
                 )
                 Box(
                     modifier = Modifier

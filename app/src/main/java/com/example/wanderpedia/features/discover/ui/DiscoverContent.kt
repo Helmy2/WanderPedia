@@ -42,7 +42,6 @@ fun DiscoverContent(
     Box(modifier) {
         WonderGrid(
             wonders = state.wonders,
-            loading = state.loading,
             onItemClick = { handleEvents(DiscoverContract.Event.OnItemClick(it)) },
             transitionScope = transitionScope,
             contentScope = contentScope,

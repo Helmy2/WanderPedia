@@ -3,11 +3,13 @@ package com.example.wanderpedia.core.ui.component
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,7 +64,9 @@ fun WonderCard(
                     imageUrl = imageUrl,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CardDefaults.shape),
+                        .clip(CardDefaults.shape)
+                        .animateContentSize()
+                        .defaultMinSize(minHeight = 150.dp),
                     contentDescription = "Image of $name",
                     error = {
                         Icon(Icons.Outlined.ImageNotSupported, contentDescription = "Error")

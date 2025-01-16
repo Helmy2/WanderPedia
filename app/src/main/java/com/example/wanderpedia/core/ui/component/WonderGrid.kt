@@ -18,7 +18,6 @@ import com.example.wanderpedia.core.domain.model.Wonder
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WonderGrid(
-    loading: Boolean,
     wonders: List<Wonder>,
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
@@ -38,18 +37,7 @@ fun WonderGrid(
         ) {
             header()
         }
-        items(if (loading) 6 else 0) { wonder ->
-            WonderCard(
-                id = "",
-                name = "",
-                location = "",
-                imageUrl = "",
-                loading = true,
-                onClick = { },
-                transitionScope = transitionScope,
-                contentScope = contentScope,
-            )
-        }
+
         items(wonders, key = { it.id }) { wonder ->
             WonderCard(
                 id = wonder.id,
