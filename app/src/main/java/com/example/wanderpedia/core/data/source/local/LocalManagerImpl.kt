@@ -2,6 +2,7 @@ package com.example.wanderpedia.core.data.source.local
 
 import com.example.wanderpedia.core.data.source.local.database.dao.WonderDao
 import com.example.wanderpedia.core.data.source.local.database.model.CachedWonder
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class LocalManagerImpl @Inject constructor(
@@ -41,6 +42,10 @@ class LocalManagerImpl @Inject constructor(
 
     override suspend fun updateWonderFavorite(id: String, isFavorite: Boolean) {
         wonderDao.updateWonderFavorite(id, isFavorite)
+    }
+
+    override fun getFavoriteWonders(): Flow<List<CachedWonder>> {
+        return wonderDao.getFavoriteWonders()
     }
 
 }

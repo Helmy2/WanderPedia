@@ -14,6 +14,8 @@ import com.example.wanderpedia.core.domain.model.WonderWithDetails
 import com.example.wanderpedia.core.domain.model.toCached
 import com.example.wanderpedia.core.domain.repository.WondersRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -120,5 +122,11 @@ class WondersRepositoryImpl @Inject constructor(
 
                 localManager.updateWonderFavorite(id, isFavorite)
             }
+        }
+
+
+    override fun getFavoriteWonders(): Flow<Result<List<Wonder>>> =
+        localManager.getFavoriteWonders().map {
+            it.runCatching { it.map { it.toDomainWonder() } }
         }
 }

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.wanderpedia.core.data.source.local.database.model.CachedWonder
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WonderDao {
@@ -43,4 +44,8 @@ interface WonderDao {
 
     @Query("UPDATE cached_wonders SET isFavorite = :isFavorite WHERE id = :id")
     suspend fun updateWonderFavorite(id: String, isFavorite: Boolean)
+
+
+    @Query("SELECT * FROM cached_wonders WHERE isFavorite = 1")
+    fun getFavoriteWonders(): Flow<List<CachedWonder>>
 }

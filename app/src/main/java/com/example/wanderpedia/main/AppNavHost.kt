@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
 import com.example.wanderpedia.features.detail.ui.navigatoin.detailNavigation
 import com.example.wanderpedia.features.discover.ui.navigation.discoverNavigation
+import com.example.wanderpedia.features.favorite.favoriteNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
 import com.example.wanderpedia.features.profile.ui.navigation.profileNavigation
 
@@ -44,8 +45,10 @@ fun AppNavHost(
             ) {
                 navController.navigate(AppDestinations.Detail(it))
             }
-            composable<AppDestinations.Favorite> {
-                Text("Favorite")
+            favoriteNavigation(
+                transitionScope = this@SharedTransitionLayout,
+            ) {
+                navController.navigate(AppDestinations.Detail(it.id))
             }
             profileNavigation(
                 navigateToLogin = { navController.navigate(AppDestinations.Auth) }

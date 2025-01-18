@@ -5,6 +5,7 @@ import com.example.wanderpedia.core.data.source.local.database.model.CachedTimeP
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.domain.model.Wonder
 import com.example.wanderpedia.core.domain.model.WonderWithDetails
+import kotlinx.coroutines.flow.Flow
 
 interface WondersRepository {
     suspend fun getWonderById(id: String): Result<WonderWithDetails>
@@ -14,5 +15,7 @@ interface WondersRepository {
     suspend fun getWondersBy(
         textQuery: String?, timePeriodQuery: CachedTimePeriod?, categoryQuery: CachedCategory?
     ): Result<List<Wonder>>
+
     suspend fun updateWonderFavorite(id: String, isFavorite: Boolean): Result<Unit>
+    fun getFavoriteWonders(): Flow<Result<List<Wonder>>>
 }
