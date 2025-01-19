@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -73,10 +74,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // Padding
-    implementation(libs.paging.runtime)
-    implementation(libs.paging.compose)
-
     // Retrofit
     implementation(libs.retrofit)
 
@@ -114,6 +111,8 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+
+    implementation(libs.maps.compose)
 
     // Test
     debugImplementation(libs.androidx.ui.tooling)

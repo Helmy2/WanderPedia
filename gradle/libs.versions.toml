@@ -19,11 +19,11 @@ hilt = "2.55"
 hiltNavigationCompose = "1.2.0"
 ksp = "2.1.0-1.0.29"
 loggingInterceptor = "4.12.0"
+mapsCompose = "6.4.1"
 mockitoKotlin = "5.4.0"
 navigationCompose = "2.8.5"
 lifecycleViewModelCompose = "2.8.7"
 kotlinSerialization = "1.8.0"
-paging = "3.3.5"
 playServicesAuth = "21.3.0"
 retrofit = "2.11.0"
 kotlinxSerializationConverter = "2.11.0"
@@ -90,9 +90,8 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 # Navigation Compose
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
-# Paging
-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+# Google Maps
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -53,8 +53,6 @@ fun HomeContent(
             ProfileBar(
                 imageUrl = state.user.imageUrl,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                transitionScope = transitionScope,
-                contentScope = contentScope,
             )
             WonderCarousel(
                 wonderList = state.ancientWonders.wonders,
@@ -81,18 +79,13 @@ fun HomeContent(
 }
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ProfileBar(
     imageUrl: String,
     iconSize: Dp = 48.dp,
     modifier: Modifier = Modifier,
-    transitionScope: SharedTransitionScope,
-    contentScope: AnimatedContentScope,
 ) {
     DefaultAppBar(modifier = modifier,
-        transitionScope = transitionScope,
-        contentScope = contentScope,
         leadingContent = {
             DefaultCircleButton(
                 onClick = { }, modifier = Modifier.size(iconSize)

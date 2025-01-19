@@ -46,7 +46,19 @@ data class LinksResponse(
     @SerialName("wiki") val wiki: String?
 )
 
+fun extractCoordinatesFromUrl(url: String): Pair<Double, Double>? {
+    val regex = """@(-?\d+\.\d+),(-?\d+\.\d+)""".toRegex()
+    val matchResult = regex.find(url)
+    return if (matchResult != null) {
+        val (latitude, longitude) = matchResult.destructured
+        Pair(latitude.toDouble(), longitude.toDouble())
+    } else {
+        null
+    }
+}
+
 fun WonderResponse.toCached(isFavorite: Boolean): CachedWonder {
+    val coordinates = extractCoordinatesFromUrl(links?.googleMaps.orEmpty())
     return CachedWonder(
         id = name ?: "",
         buildYear = buildYear,
@@ -54,7 +66,8 @@ fun WonderResponse.toCached(isFavorite: Boolean): CachedWonder {
         name = name,
         summary = summary,
         timePeriod = timePeriod.toCached(),
-        mapLink = links?.googleMaps,
+        lat = coordinates?.first,
+        lng = coordinates?.second,
         tripAdvisorLink = links?.tripAdvisor,
         wikiLink = links?.wiki,
         isFavorite = isFavorite,
