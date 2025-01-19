@@ -20,6 +20,7 @@ hiltNavigationCompose = "1.2.0"
 ksp = "2.1.0-1.0.29"
 loggingInterceptor = "4.12.0"
 mapsCompose = "6.4.1"
+mapsComposeUtils = "6.4.1"
 mockitoKotlin = "5.4.0"
 navigationCompose = "2.8.5"
 lifecycleViewModelCompose = "2.8.7"
@@ -32,6 +33,7 @@ coilCompose = "2.7.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.2"
 googleServices = "4.4.2"
+secrets = "2.0.1"
 
 [libraries]
 # Android core
@@ -92,6 +94,7 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 
 # Google Maps
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "mapsComposeUtils" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -111,3 +114,4 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }

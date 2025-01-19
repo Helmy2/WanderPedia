@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -113,6 +113,7 @@ dependencies {
     implementation(libs.googleid)
 
     implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
 
     // Test
     debugImplementation(libs.androidx.ui.tooling)
