@@ -44,8 +44,8 @@ import com.example.wanderpedia.core.ui.component.placeholder
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun DetailContent(
-    state: DetailContract.State,
-    handleEvents: (DetailContract.Event) -> Unit,
+    state: DetailState,
+    handleEvents: (DetailEvent) -> Unit,
     modifier: Modifier = Modifier,
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
@@ -81,12 +81,12 @@ fun DetailContent(
                             transitionScope = transitionScope,
                             contentScope = contentScope,
                             leadingContent = {
-                                BackButton(onClick = { handleEvents(DetailContract.Event.NavigateBack) })
+                                BackButton(onClick = { handleEvents(DetailEvent.NavigateBack) })
                             },
                             trailingContent = {
                                 DefaultCircleButton(
                                     onClick = {
-                                        handleEvents(DetailContract.Event.ToggleFavorite)
+                                        handleEvents(DetailEvent.ToggleFavorite)
                                     },
                                     modifier = modifier.size(48.dp),
                                 ) {

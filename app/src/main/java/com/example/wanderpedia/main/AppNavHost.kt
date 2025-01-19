@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
-import com.example.wanderpedia.features.detail.ui.navigatoin.detailNavigation
+import com.example.wanderpedia.features.detail.detailNavigation
 import com.example.wanderpedia.features.discover.ui.navigation.discoverNavigation
 import com.example.wanderpedia.features.favorite.favoriteNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation

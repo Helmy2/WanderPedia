@@ -4,10 +4,10 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.wanderpedia.core.ui.ObserveEffect
 import com.example.wanderpedia.core.ui.SnackbarController
 import com.example.wanderpedia.core.ui.SnackbarEvent
 
@@ -22,19 +22,18 @@ fun DetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    ObserveEffect(viewModel.effect, viewModel) {
-        when (it) {
-            is DetailContract.Effect.ShowErrorToast -> {
-                SnackbarController.sendEvent(
-                    event = SnackbarEvent(
-                        message = it.message
-                    )
+    LaunchedEffect(state.error, state.navigateBack) {
+        if (state.error != null) {
+            SnackbarController.sendEvent(
+                event = SnackbarEvent(
+                    message = state.error!!
                 )
-            }
-
-            is DetailContract.Effect.NavigateBack -> {
-                navigateBack()
-            }
+            )
+            viewModel.handleEvents(DetailEvent.OnHandelError)
+        }
+        if (state.navigateBack) {
+            navigateBack()
+            viewModel.handleEvents(DetailEvent.OnHandelNavigationToDetail)
         }
     }
 
