@@ -93,18 +93,19 @@ fun WonderCard(
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.sharedElement(
-                        transitionScope.rememberSharedContentState(key = "$id-location"),
-                        animatedVisibilityScope = contentScope
-                    )
+                    modifier = Modifier
+                        .placeholder(loading)
+                        .sharedElement(
+                            transitionScope.rememberSharedContentState(key = "$id-location"),
+                            animatedVisibilityScope = contentScope
+                        )
                 ) {
                     Icon(
                         Icons.Outlined.Place,
                         contentDescription = "Location",
                         tint = MaterialTheme.colorScheme.outline,
                         modifier = Modifier
-                            .size(MaterialTheme.typography.bodySmall.fontSize.value.dp)
-                            .placeholder(loading),
+                            .size(MaterialTheme.typography.bodySmall.fontSize.value.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -114,8 +115,6 @@ fun WonderCard(
                         maxLines = 1,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .placeholder(loading)
-
                     )
                 }
             }

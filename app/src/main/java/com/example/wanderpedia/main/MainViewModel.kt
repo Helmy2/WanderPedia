@@ -2,7 +2,6 @@ package com.example.wanderpedia.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wanderpedia.core.domain.usecase.CreateAnonymousAccountUseCase
 import com.example.wanderpedia.core.domain.usecase.GetCurrentUserFlowUseCase
 import com.example.wanderpedia.core.domain.usecase.RefreshAllWondersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,16 +15,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     getCurrentUserFlowUseCase: GetCurrentUserFlowUseCase,
-    val createAnonymousAccountUseCase: CreateAnonymousAccountUseCase,
     val refreshAllWondersUseCase: RefreshAllWondersUseCase,
 ) : ViewModel() {
     val showOnboarding: StateFlow<Boolean?> = getCurrentUserFlowUseCase().map {
         it.fold(
             onSuccess = { false },
-            onFailure = {
-                createAnonymousAccountUseCase()
-                true
-            },
+            onFailure = { true },
         )
     }.stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = null

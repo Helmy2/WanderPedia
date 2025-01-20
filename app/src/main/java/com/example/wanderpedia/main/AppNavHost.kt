@@ -2,17 +2,16 @@ package com.example.wanderpedia.main
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.example.wanderpedia.features.auth.ui.navigation.authNavigation
 import com.example.wanderpedia.features.detail.detailNavigation
 import com.example.wanderpedia.features.discover.ui.navigation.discoverNavigation
 import com.example.wanderpedia.features.favorite.favoriteNavigation
 import com.example.wanderpedia.features.home.ui.navigation.homeNavigation
+import com.example.wanderpedia.features.onboarding.onboardingNavigation
 import com.example.wanderpedia.features.profile.ui.navigation.profileNavigation
 
 
@@ -57,9 +56,7 @@ fun AppNavHost(
                 transitionScope = this@SharedTransitionLayout,
                 navigateBack = { navController.popBackStack() }
             )
-            composable<AppDestinations.Onboarding> {
-                Text("Onboarding")
-            }
+            onboardingNavigation()
         }
     }
 }
