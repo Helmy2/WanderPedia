@@ -68,6 +68,7 @@ fun WonderResponse.toCached(isFavorite: Boolean): CachedWonder {
         timePeriod = timePeriod.toCached(),
         lat = coordinates?.first,
         lng = coordinates?.second,
+        mapLink = links?.googleMaps,
         tripAdvisorLink = links?.tripAdvisor,
         wikiLink = links?.wiki,
         isFavorite = isFavorite,

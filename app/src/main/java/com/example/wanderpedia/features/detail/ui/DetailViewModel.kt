@@ -1,5 +1,8 @@
 package com.example.wanderpedia.features.detail.ui
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,9 +33,7 @@ class DetailViewModel @Inject constructor(
         val wonderId: String = savedStateHandle.toRoute<AppDestinations.Detail>().id
         loadWonder(wonderId)
     }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        DetailState()
+        viewModelScope, SharingStarted.WhileSubscribed(5000), DetailState()
     )
 
     fun handleEvents(event: DetailEvent) {
@@ -50,6 +51,8 @@ class DetailViewModel @Inject constructor(
             DetailEvent.OnHandelNavigationToDetail -> {
                 _state.value = _state.value.copy(navigateBack = false)
             }
+
+            is DetailEvent.OnOpenMapApp -> openGoogleMaps(event.context)
         }
     }
 
@@ -74,8 +77,7 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _state.value = _state.value.copy(loading = true)
             updateWonderFavoriteUseCase(
-                id = state.value.wonder?.id.orEmpty(),
-                isFavorite = state.value.isFavorite.not()
+                id = state.value.wonder?.id.orEmpty(), isFavorite = state.value.isFavorite.not()
             ).apply {
                 fold(
                     onSuccess = {
@@ -87,6 +89,16 @@ class DetailViewModel @Inject constructor(
                 )
             }
             _state.value = _state.value.copy(loading = false)
+        }
+    }
+
+    private fun openGoogleMaps(context: Context) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(_state.value.wonder?.mapLink))
+        if (intent.resolveActivity(context.packageManager) != null) {
+            intent.setPackage("com.google.android.apps.maps")
+            context.startActivity(intent)
+        } else {
+            _state.value = _state.value.copy(error = "Google Maps is not installed")
         }
     }
 }

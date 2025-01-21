@@ -1,5 +1,6 @@
 package com.example.wanderpedia.features.detail.ui
 
+import android.content.Context
 import com.example.wanderpedia.core.domain.model.WonderWithDetails
 import com.example.wanderpedia.core.ui.ViewEvent
 import com.example.wanderpedia.core.ui.ViewState
@@ -17,5 +18,6 @@ sealed class DetailEvent : ViewEvent {
     data object ToggleFavorite : DetailEvent()
     data object OnHandelError : DetailEvent()
     data object OnHandelNavigationToDetail : DetailEvent()
+    data class OnOpenMapApp(val context: Context) : DetailEvent()
 }
 

@@ -14,6 +14,7 @@ data class WonderWithDetails(
     val timePeriod: TimePeriod,
     val lat: Double?,
     val lng: Double?,
+    val mapLink: String,
     val tripAdvisorLink: String,
     val wikiLink: String,
     val images: List<String>,

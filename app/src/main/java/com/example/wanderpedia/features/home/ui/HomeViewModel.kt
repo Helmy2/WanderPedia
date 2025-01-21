@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
         result.onFailure {
             setEffect {
                 HomeContract.Effect.ShowErrorToast(
-                    it.localizedMessage ?: "Unknown error"
+                    it.localizedMessage ?: ""
                 )
             }
         }
@@ -72,7 +72,7 @@ class HomeViewModel @Inject constructor(
                     onFailure = {
                         setEffect {
                             HomeContract.Effect.ShowErrorToast(
-                                it.localizedMessage ?: "Unknown error"
+                                it.localizedMessage ?: ""
                             )
                         }
                     },

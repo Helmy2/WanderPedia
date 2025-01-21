@@ -8,17 +8,17 @@ import javax.inject.Inject
 
 
 class FireStoreUserDataSource @Inject constructor(
-    firestore: FirebaseFirestore,
-    auth: FirebaseAuth,
+    val firestore: FirebaseFirestore,
+    val auth: FirebaseAuth,
 ) : RemoteUserDataSource {
 
-    var reference: CollectionReference? = null
 
-    init {
+    fun getReference(): CollectionReference? {
         val userId = auth.currentUser?.uid
         if (userId != null) {
-            reference = firestore.collection(USERS).document(userId).collection(FAVORITES)
+            return firestore.collection(USERS).document(userId).collection(FAVORITES)
         }
+        return null
     }
 
     companion object {
@@ -28,17 +28,19 @@ class FireStoreUserDataSource @Inject constructor(
     }
 
     override suspend fun addFavoriteWonder(id: String) {
+        val reference = getReference()
         if (reference == null)
             throw Exception("No user logged in")
 
-        reference!!.add(hashMapOf(ID to id)).await()
+        reference.add(hashMapOf(ID to id)).await()
     }
 
     override suspend fun getFavoriteWondersId(): List<String> {
+        val reference = getReference()
         if (reference == null)
             return emptyList()
 
-        val querySnapshot = reference!!.get().await()
+        val querySnapshot = reference.get().await()
 
         val list: MutableList<String> = mutableListOf()
         for (document in querySnapshot.documents) {
@@ -50,13 +52,14 @@ class FireStoreUserDataSource @Inject constructor(
     }
 
     override suspend fun removeFavoriteWonder(id: String) {
+        val reference = getReference()
         if (reference == null)
             throw Exception("No user logged in")
 
-        val personQuery = reference!!.whereEqualTo(ID, id).get().await()
+        val personQuery = reference.whereEqualTo(ID, id).get().await()
         if (personQuery.documents.isNotEmpty()) {
             for (document in personQuery) {
-                reference!!.document(document.id).delete().await()
+                reference.document(document.id).delete().await()
             }
         }
     }

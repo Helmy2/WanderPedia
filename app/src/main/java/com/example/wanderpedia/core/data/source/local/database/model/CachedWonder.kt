@@ -20,6 +20,7 @@ data class CachedWonder(
     val lng: Double?,
     val tripAdvisorLink: String?,
     val wikiLink: String?,
+    val mapLink: String?,
     @TypeConverters(com.example.wanderpedia.core.data.source.local.database.conveter.StringListConverter::class)
     val images: List<String>,
     @TypeConverters(com.example.wanderpedia.core.data.source.local.database.conveter.StringListConverter::class)
@@ -56,6 +57,7 @@ fun CachedWonder.toDomainWonderWithDigitalis(): WonderWithDetails {
         timePeriod = timePeriod.toDomainWonder(),
         lat = lat,
         lng = lng,
+        mapLink = mapLink ?: "",
         tripAdvisorLink = tripAdvisorLink ?: "Unknown",
         wikiLink = wikiLink ?: "Unknown",
         images = images,

@@ -2,6 +2,7 @@ package com.example.wanderpedia.features.detail.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.wanderpedia.core.domain.model.Category
 import com.example.wanderpedia.core.ui.component.BackButton
@@ -51,12 +54,12 @@ import com.example.wanderpedia.core.ui.component.carouselTransition
 import com.example.wanderpedia.core.ui.component.placeholder
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
@@ -68,6 +71,7 @@ fun DetailContent(
     transitionScope: SharedTransitionScope,
     contentScope: AnimatedContentScope,
 ) {
+    val context = LocalContext.current
     var mapInitialized by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -129,13 +133,17 @@ fun DetailContent(
 
                     Text(text = wonder.summary, style = MaterialTheme.typography.bodyMedium)
 
-                    MapCard(
-                        title = wonder.name,
-                        lat = wonder.lat,
-                        log = wonder.lng,
-                        mapInitialized = mapInitialized,
-                        modifier = Modifier.height(200.dp)
-                    )
+                    AnimatedVisibility(
+                        visible = wonder.lat != null && wonder.lng != null
+                    ) {
+                        LocationCard(lat = wonder.lat!!,
+                            lng = wonder.lng!!,
+                            mapInitialized = mapInitialized,
+                            modifier = Modifier.height(250.dp),
+                            onOpenMapApp = {
+                                handleEvents(DetailEvent.OnOpenMapApp(context))
+                            })
+                    }
                 }
             }
         }
@@ -252,45 +260,63 @@ fun ImageSlider(
 
 
 @Composable
-fun MapCard(
-    title: String,
-    lat: Double?,
-    log: Double?,
+fun LocationCard(
+    lat: Double,
+    lng: Double,
     mapInitialized: Boolean,
     modifier: Modifier = Modifier,
+    onOpenMapApp: () -> Unit,
 ) {
-    if (lat == null || log == null) {
-        Text(
-            text = "Invalid Google Maps URL",
-            modifier = Modifier.fillMaxSize()
-        )
-    } else {
-        val centerLatLng = LatLng(lat, log)
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.builder().target(centerLatLng).zoom(14f).build()
-        }
-        val mark = rememberMarkerState(position = centerLatLng)
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            AnimatedContent(mapInitialized) {
-                if (it) {
-                    GoogleMap(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .fillMaxSize(),
-                        cameraPositionState = cameraPositionState,
-                        properties = MapProperties(
-                            mapType = MapType.HYBRID,
-                            isMyLocationEnabled = false,
-                            isTrafficEnabled = false,
-                            isIndoorEnabled = false,
-                        ),
-                    ) {
-                        Marker(state = mark, title = title)
-                    }
-                } else {
-                    CircularProgressIndicator()
-                }
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        AnimatedContent(mapInitialized) {
+            if (it) {
+                MapContent(lat, lng, onOpenMapApp)
+            } else {
+                CircularProgressIndicator()
             }
+        }
+    }
+}
+
+@Composable
+fun MapContent(
+    lat: Double, lng: Double, onOpenMapApp: () -> Unit
+) {
+    val centerLatLng = remember { LatLng(lat, lng) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.builder().target(centerLatLng).zoom(14f).build()
+    }
+    Box(
+        Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .fillMaxSize()
+    ) {
+        GoogleMap(
+            cameraPositionState = cameraPositionState, properties = MapProperties(
+                mapType = MapType.HYBRID,
+            ), uiSettings = MapUiSettings(
+                compassEnabled = false,
+                zoomControlsEnabled = false,
+                mapToolbarEnabled = false,
+                rotationGesturesEnabled = false,
+                scrollGesturesEnabled = false,
+                tiltGesturesEnabled = false,
+                zoomGesturesEnabled = false,
+            )
+        ) {
+            Circle(
+                center = centerLatLng,
+                fillColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                strokeColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                radius = 800.0,
+            )
+        }
+        TextButton(
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.BottomEnd), onClick = onOpenMapApp
+        ) {
+            Text(text = "Open in Maps", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
