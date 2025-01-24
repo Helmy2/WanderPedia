@@ -11,8 +11,8 @@ engagement.
 
 ### Explore Wonders of the World
 
-- View detailed information about the world’s wonders, powered by the[**World Wonders API
-  **](https://www.world-wonders-api.org/v0/docs#tag/default/get/v0/wonders/).
+- View detailed information about the world’s wonders, powered by the[World Wonders API
+  ](https://www.world-wonders-api.org/v0/docs#tag/default/get/v0/wonders/).
 
 ### Discover Feature
 
@@ -135,16 +135,10 @@ file
 
 ## Screenshots
 
-<img width="200" src='images/image_1.jpg'/>
-<img width="200" src='images/image_2.jpg'/>
-<img width="200" src='images/image_3.jpg'/>
-<img width="200" src='images/image_4.jpg'/>
-<img width="200" src='images/image_5.jpg'/>
-<img width="200" src='images/image_6.jpg'/>
-<img width="200" src='images/image_7.jpg'/>
-<img width="200" src='images/image_8.jpg'/>
-<img width="200" src='images/image_9.jpg'/>
-<img width="200" src='images/image_10.jpg'/>
+<img width="200" src='images/image_1.jpg'/> <img width="200" src='images/image_2.jpg'/> <img width="200" src='images/image_3.jpg'/> 
+<img width="200" src='images/image_4.jpg'/> <img width="200" src='images/image_5.jpg'/> <img width="200" src='images/image_6.jpg'/> 
+<img width="200" src='images/image_7.jpg'/> <img width="200" src='images/image_8.jpg'/> <img width="200" src='images/image_9.jpg'/> 
+<img width="200" src='images/image_10.jpg'/> 
 
 ## Acknowledgments
 
