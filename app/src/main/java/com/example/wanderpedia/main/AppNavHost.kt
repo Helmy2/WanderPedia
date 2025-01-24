@@ -36,9 +36,10 @@ fun AppNavHost(
             )
             homeNavigation(
                 transitionScope = this@SharedTransitionLayout,
-            ) {
-                navController.navigate(AppDestinations.Detail(it))
-            }
+                navigateToDetail = {
+                    navController.navigate(AppDestinations.Detail(it))
+                }
+            )
             discoverNavigation(
                 transitionScope = this@SharedTransitionLayout,
             ) {
@@ -56,7 +57,15 @@ fun AppNavHost(
                 transitionScope = this@SharedTransitionLayout,
                 navigateBack = { navController.popBackStack() }
             )
-            onboardingNavigation()
+            onboardingNavigation(
+                navigateHome = {
+                    navController.navigate(AppDestinations.Home) {
+                        popUpTo(AppDestinations.Onboarding) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
     }
 }

@@ -26,16 +26,16 @@ data class OnboardingPage(
 val pages = listOf(
     OnboardingPage(
         title = "Discover Wonders",
-        description = "Explore the wonders of the world and learn fascinating details about them.",
+        description = "Embark on a journey to explore the wonders of the world with detailed information at your fingertips.",
         imageRes = R.drawable.discover
     ), OnboardingPage(
-        title = "Bookmark & Notes",
-        description = "Save your favorite places and jot down your thoughts.",
-        imageRes = R.drawable.bookmark
-    ), OnboardingPage(
-        title = "Navigate & Weather",
-        description = "See maps, navigation, and live weather updates for each wonder.",
+        title = "Interactive Maps",
+        description = "Find wonders on the map and navigate with ease using integrated Google Maps. ",
         imageRes = R.drawable.map
+    ), OnboardingPage(
+        title = "Your Favorites",
+        description = "Save your favorite wonders and view them anytime in your personal favorites screen.",
+        imageRes = R.drawable.bookmark
     )
 )
 

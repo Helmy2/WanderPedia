@@ -22,7 +22,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(
-    viewModel: OnboardingViewModel = hiltViewModel()
+    viewModel: OnboardingViewModel = hiltViewModel(),
+    navigateHome: () -> Unit
 ) {
     val pagerState = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
@@ -47,6 +48,7 @@ fun OnboardingScreen(
             if (it) {
                 DefaultButton(onClick = {
                     viewModel.createAnonymousAccount()
+                    navigateHome()
                 }, isPrimary = true) {
                     Text(text = "Get Started")
                 }
